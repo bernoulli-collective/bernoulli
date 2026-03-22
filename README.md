@@ -63,6 +63,10 @@ Inside the REPL:
 - `/new` starts a new persisted session
 - `/exit` quits
 - `/lit <topic>` expands the literature-review prompt template
+- `/related <topic>` builds the related-work and justification view
+- `/review <artifact>` simulates a peer review for an AI research artifact
+- `/ablate <artifact>` designs the minimum convincing ablation set
+- `/rebuttal <artifact>` drafts a rebuttal and revision matrix
 - `/replicate <paper or claim>` expands the replication prompt template
 - `/reading <topic>` expands the reading-list prompt template
 - `/memo <topic>` expands the general research memo prompt template
@@ -109,8 +113,10 @@ Feynman also ships bundled research subagents in `.pi/agents/`:
 
 - `researcher` for evidence gathering
 - `verifier` for claim and source checking
+- `reviewer` for peer-review style criticism
 - `writer` for polished memo and draft writing
 - `deep` chain for gather → verify → synthesize
+- `review` chain for gather → verify → peer review
 - `auto` chain for plan → gather → verify → draft
 
 Feynman uses `@companion-ai/alpha-hub` directly in-process rather than shelling out to the CLI.

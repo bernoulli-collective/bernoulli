@@ -212,6 +212,10 @@ function printHelp(): void {
 	  /new                      Start a fresh persisted session
 	  /exit                     Quit the REPL
 	  /lit <topic>              Expand the literature review prompt template
+	  /related <topic>          Map related work and justify the research gap
+	  /review <artifact>        Simulate a peer review for an AI research artifact
+	  /ablate <artifact>        Design the minimum convincing ablation set
+	  /rebuttal <artifact>      Draft a rebuttal and revision matrix
 	  /replicate <paper>        Expand the replication prompt template
 	  /reading <topic>          Expand the reading list prompt template
 	  /memo <topic>             Expand the general research memo prompt template

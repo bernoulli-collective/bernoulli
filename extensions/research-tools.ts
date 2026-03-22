@@ -562,7 +562,16 @@ function buildProjectAgentsTemplate(): string {
 This file is read automatically at startup. It is the durable project memory for Feynman.
 
 ## Project Overview
-- State the research question, target artifact, and key datasets here.
+- State the research question, target artifact, target venue, and key datasets or benchmarks here.
+
+## AI Research Context
+- Problem statement:
+- Core hypothesis:
+- Closest prior work:
+- Required baselines:
+- Required ablations:
+- Primary metrics:
+- Datasets / benchmarks:
 
 ## Ground Rules
 - Do not modify raw data in \`Data/Raw/\` or equivalent raw-data folders.
@@ -575,6 +584,11 @@ This file is read automatically at startup. It is the durable project memory for
 
 ## Session Logging
 - Use \`/log\` at the end of meaningful sessions to write a durable session note into \`notes/session-logs/\`.
+
+## Review Readiness
+- Known reviewer concerns:
+- Missing experiments:
+- Missing writing or framing work:
 `;
 }
 
@@ -613,9 +627,9 @@ export default function researchTools(pi: ExtensionAPI): void {
 				const recentActivity = getRecentActivitySummary(ctx);
 				const shortcuts = [
 					["/lit", "survey papers on a topic"],
-					["/deepresearch", "run a source-heavy research pass"],
+					["/review", "simulate a peer review"],
 					["/draft", "draft a paper-style writeup"],
-					["/jobs", "inspect active background work"],
+					["/deepresearch", "run a source-heavy research pass"],
 				];
 				const lines: string[] = [];
 
