@@ -13,5 +13,5 @@ Requirements:
   - unnecessary experiments
 - Call out where benchmark norms imply mandatory controls.
 - Optimize for the minimum convincing set, not experiment sprawl.
-- Save the plan to `outputs/` as markdown if the user wants a durable artifact.
+- If the user wants a durable artifact, save exactly one plan to `outputs/` as markdown.
 - End with a `Sources` section containing direct URLs for any external sources used.

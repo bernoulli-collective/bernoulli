@@ -13,6 +13,7 @@ Requirements:
 - Build a compact evidence table before committing to a paper narrative.
 - If experiments are feasible in the current environment, design and run the smallest experiment that materially reduces uncertainty.
 - If experiments are not feasible, produce a paper-style draft that is explicit about missing validation and limitations.
-- Save intermediate planning or synthesis artifacts to `notes/` or `outputs/`.
-- Save the final paper-style draft to `papers/`.
+- Produce one final durable markdown artifact for the user-facing result.
+- If the result is a paper-style draft, save it to `papers/`; otherwise save it to `outputs/`.
+- Do not create extra user-facing intermediate markdown files unless the user explicitly asks for them.
 - End with a `Sources` section containing direct URLs for every source used.

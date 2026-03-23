@@ -15,5 +15,5 @@ Requirements:
 - For each important paper, explain why it matters to this project.
 - Be explicit about what real gap remains after considering the strongest prior work.
 - If the project is not differentiated enough, say so clearly.
-- Save the artifact to `outputs/` as markdown if the user wants a durable result.
+- If the user wants a durable result, save exactly one artifact to `outputs/` as markdown.
 - End with a `Sources` section containing direct URLs.

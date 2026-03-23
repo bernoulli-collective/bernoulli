@@ -3,7 +3,7 @@ import { createRequire } from "node:module";
 import { mkdir, mkdtemp, readFile, readdir, stat, writeFile } from "node:fs/promises";
 import { homedir, tmpdir } from "node:os";
 import { basename, dirname, extname, join, resolve as resolvePath } from "node:path";
-import { pathToFileURL } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import { promisify } from "node:util";
 import {
 	annotatePaper,
@@ -19,7 +19,7 @@ import {
 	readPaperCode,
 	searchPapers,
 } from "@companion-ai/alpha-hub/lib";
-import type { ExtensionAPI, ExtensionContext } from "@mariozechner/pi-coding-agent";
+import type { ExtensionAPI, ExtensionContext, SlashCommandInfo } from "@mariozechner/pi-coding-agent";
 import { Type } from "@sinclair/typebox";
 
 const execFileAsync = promisify(execFile);
@@ -32,6 +32,39 @@ const FEYNMAN_VERSION = (() => {
 		return "dev";
 	}
 })();
+
+const APP_ROOT = resolvePath(dirname(fileURLToPath(import.meta.url)), "..");
+
+const FEYNMAN_AGENT_LOGO = [
+	"███████╗███████╗██╗   ██╗███╗   ██╗███╗   ███╗ █████╗ ███╗   ██╗",
+	"██╔════╝██╔════╝╚██╗ ██╔╝████╗  ██║████╗ ████║██╔══██╗████╗  ██║",
+	"█████╗  █████╗   ╚████╔╝ ██╔██╗ ██║██╔████╔██║███████║██╔██╗ ██║",
+	"██╔══╝  ██╔══╝    ╚██╔╝  ██║╚██╗██║██║╚██╔╝██║██╔══██║██║╚██╗██║",
+	"██║     ███████╗   ██║   ██║ ╚████║██║ ╚═╝ ██║██║  ██║██║ ╚████║",
+	"╚═╝     ╚══════╝   ╚═╝   ╚═╝  ╚═══╝╚═╝     ╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝",
+];
+
+const FEYNMAN_MARK_ART = [
+	"            .-.",
+	"           /___\\\\",
+	"           |:::|",
+	"           |:::|",
+	"       .-'`:::::`'-.",
+	"      /:::::::::::::\\\\",
+	"      \\\\:::::::::::://",
+	"       '-.______.-'",
+];
+
+const FEYNMAN_RESEARCH_TOOLS = [
+	"alpha_search",
+	"alpha_get_paper",
+	"alpha_ask_paper",
+	"alpha_annotate_paper",
+	"alpha_list_annotations",
+	"alpha_read_code",
+	"session_search",
+	"preview_file",
+];
 
 function formatToolText(result: unknown): string {
 	return typeof result === "string" ? result : JSON.stringify(result, null, 2);
@@ -454,6 +487,15 @@ function padCell(text: string, width: number): string {
 	return `${truncated}${" ".repeat(Math.max(0, width - truncated.length))}`;
 }
 
+function centerText(text: string, width: number): string {
+	if (text.length >= width) {
+		return truncateForWidth(text, width);
+	}
+	const left = Math.floor((width - text.length) / 2);
+	const right = width - text.length - left;
+	return `${" ".repeat(left)}${text}${" ".repeat(right)}`;
+}
+
 function wrapForWidth(text: string, width: number, maxLines: number): string[] {
 	if (width <= 0 || maxLines <= 0) {
 		return [];
@@ -542,6 +584,112 @@ function buildTitledBorder(width: number, title: string): { left: string; right:
 	};
 }
 
+type CatalogSummary = {
+	count: number;
+	lines: string[];
+};
+
+function sortCommands(commands: SlashCommandInfo[]): SlashCommandInfo[] {
+	return [...commands].sort((a, b) => a.name.localeCompare(b.name));
+}
+
+function buildCommandCatalogSummary(pi: ExtensionAPI): CatalogSummary {
+	const commands = pi.getCommands();
+	const promptCommands = sortCommands(commands.filter((command) => command.source === "prompt")).map((command) => `/${command.name}`);
+	const extensionCommands = sortCommands(commands.filter((command) => command.source === "extension")).map((command) =>
+		`/${command.name}`
+	);
+	const lines: string[] = [];
+
+	if (promptCommands.length > 0) {
+		lines.push(`prompts: ${promptCommands.join(", ")}`);
+	}
+	if (extensionCommands.length > 0) {
+		lines.push(`commands: ${extensionCommands.join(", ")}`);
+	}
+
+	return {
+		count: promptCommands.length + extensionCommands.length,
+		lines,
+	};
+}
+
+function buildToolCatalogSummary(pi: ExtensionAPI): CatalogSummary {
+	const available = new Set(pi.getAllTools().map((tool) => tool.name));
+	const tools = FEYNMAN_RESEARCH_TOOLS.filter((tool) => available.has(tool));
+	const lines = [
+		`alpha_search, alpha_get_paper, alpha_ask_paper`,
+		`alpha_annotate_paper, alpha_list_annotations, alpha_read_code`,
+		`session_search, preview_file`,
+	].filter((line) => line.split(", ").some((tool) => available.has(tool)));
+
+	return {
+		count: tools.length,
+		lines,
+	};
+}
+
+async function buildSkillCatalogSummary(): Promise<CatalogSummary> {
+	const categories = new Map<string, string[]>();
+	let count = 0;
+
+	async function walk(dir: string, segments: string[] = []): Promise<void> {
+		const entries = await readdir(dir, { withFileTypes: true });
+		for (const entry of entries) {
+			const nextPath = resolvePath(dir, entry.name);
+			if (entry.isDirectory()) {
+				await walk(nextPath, [...segments, entry.name]);
+				continue;
+			}
+			if (!entry.isFile() || entry.name !== "SKILL.md") {
+				continue;
+			}
+
+			const category = segments[0] ?? "general";
+			const skillName = segments[segments.length - 1] ?? "skill";
+			const bucket = categories.get(category) ?? [];
+			bucket.push(skillName);
+			categories.set(category, bucket);
+			count += 1;
+		}
+	}
+
+	try {
+		await walk(resolvePath(APP_ROOT, "skills"));
+	} catch {
+		return { count: 0, lines: [] };
+	}
+
+	const lines = [...categories.entries()]
+		.sort(([a], [b]) => a.localeCompare(b))
+		.slice(0, 8)
+		.map(([category, names]) => `${category}: ${names.join(", ")}`);
+
+	return { count, lines };
+}
+
+async function buildAgentCatalogSummary(): Promise<CatalogSummary> {
+	const names: string[] = [];
+	try {
+		const entries = await readdir(resolvePath(APP_ROOT, ".pi", "agents"), { withFileTypes: true });
+		for (const entry of entries) {
+			if (!entry.isFile() || !entry.name.endsWith(".md")) {
+				continue;
+			}
+			const base = entry.name.replace(/\.chain\.md$/i, "").replace(/\.md$/i, "");
+			names.push(base);
+		}
+	} catch {
+		return { count: 0, lines: [] };
+	}
+
+	names.sort((a, b) => a.localeCompare(b));
+	return {
+		count: names.length,
+		lines: names.length > 0 ? wrapForWidth(names.join(", "), 80, 4) : [],
+	};
+}
+
 function formatShortcutLine(command: string, description: string, width: number): string {
 	const commandWidth = Math.min(18, Math.max(13, Math.floor(width * 0.3)));
 	return truncateForWidth(`${padCell(command, commandWidth)} ${description}`, width);
@@ -611,84 +759,58 @@ type HelpCommand = {
 	description: string;
 };
 
-function buildFeynmanHelpSections(): Array<{ title: string; commands: HelpCommand[] }> {
+function buildFeynmanHelpSections(pi: ExtensionAPI): Array<{ title: string; commands: HelpCommand[] }> {
+	const commands = pi.getCommands();
+	const promptCommands = sortCommands(commands.filter((command) => command.source === "prompt")).map((command) => ({
+		usage: `/${command.name}`,
+		description: command.description ?? "Prompt workflow",
+	}));
+	const extensionCommands = sortCommands(commands.filter((command) => command.source === "extension")).map((command) => ({
+		usage: `/${command.name}`,
+		description: command.description ?? "Extension command",
+	}));
+
 	return [
 		{
-			title: "Core Research Workflows",
-			commands: [
-				{ usage: "/lit <topic>", description: "Survey papers on a topic." },
-				{ usage: "/related <topic>", description: "Map related work and justify the gap." },
-				{ usage: "/review <artifact>", description: "Simulate a peer review for an AI research artifact." },
-				{ usage: "/ablate <artifact>", description: "Design the minimum convincing ablation set." },
-				{ usage: "/rebuttal <artifact>", description: "Draft a rebuttal and revision matrix." },
-				{ usage: "/replicate <paper or claim>", description: "Plan or execute a replication workflow." },
-				{ usage: "/reading <topic>", description: "Build a prioritized reading list." },
-				{ usage: "/memo <topic>", description: "Write a source-grounded research memo." },
-				{ usage: "/compare <topic>", description: "Compare sources and disagreements." },
-				{ usage: "/audit <item>", description: "Audit a paper against its codebase." },
-				{ usage: "/draft <topic>", description: "Write a paper-style draft." },
-				{ usage: "/deepresearch <topic>", description: "Run a source-heavy research pass." },
-				{ usage: "/autoresearch <idea>", description: "Run an end-to-end idea-to-paper workflow." },
-			],
+			title: "Prompt Workflows",
+			commands: promptCommands,
 		},
 		{
-			title: "Project Memory And Tracking",
-			commands: [
-				{ usage: "/init", description: "Bootstrap AGENTS.md and session-log folders." },
-				{ usage: "/log", description: "Write a durable session log into notes/." },
-				{ usage: "/watch <topic>", description: "Create a recurring or deferred research watch." },
-				{ usage: "/jobs", description: "Inspect active background work." },
-				{ usage: "/search", description: "Search prior indexed sessions." },
-			],
-		},
-		{
-			title: "Delegation And Background Work",
-			commands: [
-				{ usage: "/agents", description: "Open the agent and chain manager." },
-				{ usage: "/run <agent> <task>", description: "Run one subagent." },
-				{ usage: "/chain ...", description: "Run a sequential multi-agent chain." },
-				{ usage: "/parallel ...", description: "Run agents in parallel." },
-				{ usage: "/ps", description: "Open the background process panel." },
-				{ usage: "/schedule-prompt", description: "Manage recurring and deferred jobs." },
-			],
-		},
-		{
-			title: "Setup And Utilities",
-			commands: [
-				{ usage: "/alpha-login", description: "Sign in to alphaXiv." },
-				{ usage: "/alpha-status", description: "Check alphaXiv auth." },
-				{ usage: "/alpha-logout", description: "Clear alphaXiv auth." },
-				{ usage: "/preview", description: "Preview generated artifacts." },
-			],
+			title: "Commands",
+			commands: extensionCommands,
 		},
 	];
 }
 
 export default function researchTools(pi: ExtensionAPI): void {
-	function installFeynmanHeader(ctx: ExtensionContext): void {
+	let skillSummaryPromise: Promise<CatalogSummary> | undefined;
+	let agentSummaryPromise: Promise<CatalogSummary> | undefined;
+
+	async function installFeynmanHeader(ctx: ExtensionContext): Promise<void> {
 		if (!ctx.hasUI) {
 			return;
 		}
 
+		skillSummaryPromise ??= buildSkillCatalogSummary();
+		agentSummaryPromise ??= buildAgentCatalogSummary();
+		const commandSummary = buildCommandCatalogSummary(pi);
+		const skillSummary = await skillSummaryPromise;
+		const agentSummary = await agentSummaryPromise;
+		const toolSummary = buildToolCatalogSummary(pi);
+
 		ctx.ui.setHeader((_tui, theme) => ({
 			render(width: number): string[] {
 				const maxAvailableWidth = Math.max(width - 2, 1);
-				const preferredWidth = Math.min(104, Math.max(56, width - 4));
+				const preferredWidth = Math.min(136, Math.max(72, maxAvailableWidth));
 				const cardWidth = Math.min(maxAvailableWidth, preferredWidth);
 				const innerWidth = cardWidth - 2;
 				const outerPadding = " ".repeat(Math.max(0, Math.floor((width - cardWidth) / 2)));
-				const title = truncateForWidth(` Feynman v${FEYNMAN_VERSION} `, innerWidth);
+				const title = truncateForWidth(` Feynman Research Agent v${FEYNMAN_VERSION} `, innerWidth);
 				const titledBorder = buildTitledBorder(innerWidth, title);
 				const modelLabel = getCurrentModelLabel(ctx);
-				const sessionLabel = ctx.sessionManager.getSessionName()?.trim() || "default session";
+				const sessionLabel = ctx.sessionManager.getSessionName()?.trim() || ctx.sessionManager.getSessionId();
 				const directoryLabel = formatHeaderPath(ctx.cwd);
 				const recentActivity = getRecentActivitySummary(ctx);
-				const shortcuts = [
-					["/lit", "survey papers on a topic"],
-					["/review", "simulate a peer review"],
-					["/draft", "draft a paper-style writeup"],
-					["/deepresearch", "run a source-heavy research pass"],
-				];
 				const lines: string[] = [];
 
 				const push = (line: string): void => {
@@ -703,7 +825,15 @@ export default function researchTools(pi: ExtensionAPI): void {
 					theme.fg("accent", theme.bold(padCell(text, cellWidth)));
 				const styleMutedCell = (text: string, cellWidth: number): string =>
 					theme.fg("muted", padCell(text, cellWidth));
+				const styleSuccessCell = (text: string, cellWidth: number): string =>
+					theme.fg("success", theme.bold(padCell(text, cellWidth)));
+				const styleWarningCell = (text: string, cellWidth: number): string =>
+					theme.fg("warning", theme.bold(padCell(text, cellWidth)));
 
+				push("");
+				for (const logoLine of FEYNMAN_AGENT_LOGO) {
+					push(theme.fg("accent", theme.bold(centerText(logoLine, cardWidth))));
+				}
 				push("");
 				push(
 					theme.fg("borderMuted", `╭${titledBorder.left}`) +
@@ -711,7 +841,7 @@ export default function researchTools(pi: ExtensionAPI): void {
 						theme.fg("borderMuted", `${titledBorder.right}╮`),
 				);
 
-				if (innerWidth < 88) {
+				if (innerWidth < 72) {
 					const activityLines = wrapForWidth(recentActivity, innerWidth, 2);
 					push(renderBoxLine(padCell("", innerWidth)));
 					push(renderBoxLine(theme.fg("accent", theme.bold(padCell("Research session ready", innerWidth)))));
@@ -719,19 +849,82 @@ export default function researchTools(pi: ExtensionAPI): void {
 					push(renderBoxLine(padCell(`session: ${sessionLabel}`, innerWidth)));
 					push(renderBoxLine(padCell(`directory: ${directoryLabel}`, innerWidth)));
 					push(renderDivider());
-					push(renderBoxLine(theme.fg("accent", theme.bold(padCell("Quick starts", innerWidth)))));
-					for (const [command, description] of shortcuts) {
-						push(renderBoxLine(padCell(formatShortcutLine(command, description, innerWidth), innerWidth)));
+					push(renderBoxLine(theme.fg("accent", theme.bold(padCell("Available tools", innerWidth)))));
+					for (const toolLine of toolSummary.lines.slice(0, 4)) {
+						push(renderBoxLine(padCell(toolLine, innerWidth)));
+					}
+					push(renderDivider());
+					push(renderBoxLine(theme.fg("accent", theme.bold(padCell("Slash Commands", innerWidth)))));
+					for (const commandLine of commandSummary.lines.slice(0, 4)) {
+						push(renderBoxLine(padCell(commandLine, innerWidth)));
+					}
+					push(renderDivider());
+					push(renderBoxLine(theme.fg("success", theme.bold(padCell("Research Skills", innerWidth)))));
+					for (const skillLine of skillSummary.lines.slice(0, 4)) {
+						push(renderBoxLine(padCell(skillLine, innerWidth)));
+					}
+					if (agentSummary.lines.length > 0) {
+						push(renderDivider());
+						push(renderBoxLine(theme.fg("warning", theme.bold(padCell("Project Agents", innerWidth)))));
+						for (const agentLine of agentSummary.lines.slice(0, 3)) {
+							push(renderBoxLine(padCell(agentLine, innerWidth)));
+						}
 					}
 					push(renderDivider());
 					push(renderBoxLine(theme.fg("accent", theme.bold(padCell("Recent activity", innerWidth)))));
 					for (const activityLine of activityLines.length > 0 ? activityLines : ["No messages yet in this session."]) {
 						push(renderBoxLine(padCell(activityLine, innerWidth)));
 					}
+					push(renderDivider());
+					push(
+						renderBoxLine(
+							padCell(
+								`${toolSummary.count} tools · ${commandSummary.count} commands · ${skillSummary.count} skills · /help`,
+								innerWidth,
+							),
+						),
+					);
 				} else {
-					const leftWidth = Math.min(44, Math.max(38, Math.floor(innerWidth * 0.43)));
+					const leftWidth = Math.min(44, Math.max(30, Math.floor(innerWidth * 0.36)));
 					const rightWidth = innerWidth - leftWidth - 3;
 					const activityLines = wrapForWidth(recentActivity, innerWidth, 2);
+					const wrappedToolLines = toolSummary.lines.flatMap((line) => wrapForWidth(line, rightWidth, 3));
+					const wrappedCommandLines = commandSummary.lines.flatMap((line) => wrapForWidth(line, rightWidth, 4));
+					const wrappedSkillLines = skillSummary.lines.flatMap((line) => wrapForWidth(line, rightWidth, 4));
+					const wrappedAgentLines = agentSummary.lines.flatMap((line) => wrapForWidth(line, rightWidth, 4));
+					const wrappedModelLines = wrapForWidth(`model: ${modelLabel}`, leftWidth, 2);
+					const wrappedDirectoryLines = wrapForWidth(`directory: ${directoryLabel}`, leftWidth, 2);
+					const wrappedSessionLines = wrapForWidth(`session: ${sessionLabel}`, leftWidth, 2);
+					const wrappedFooterLines = wrapForWidth(
+						`${toolSummary.count} tools · ${commandSummary.count} commands · ${skillSummary.count} skills · /help`,
+						leftWidth,
+						2,
+					);
+					const leftLines = [
+						...FEYNMAN_MARK_ART.map((line) => centerText(line, leftWidth)),
+						"",
+						centerText("Research shell ready", leftWidth),
+						"",
+						...wrappedModelLines,
+						...wrappedDirectoryLines,
+						...wrappedSessionLines,
+						"",
+						...wrappedFooterLines,
+					];
+					const rightLines = [
+						"Available Tools",
+						...wrappedToolLines,
+						"",
+						"Slash Commands",
+						...wrappedCommandLines,
+						"",
+						"Research Skills",
+						...wrappedSkillLines,
+						...(wrappedAgentLines.length > 0 ? ["", "Project Agents", ...wrappedAgentLines] : []),
+						"",
+						"Recent Activity",
+						...(activityLines.length > 0 ? activityLines : ["No messages yet in this session."]),
+					];
 					const row = (
 						left: string,
 						right: string,
@@ -751,15 +944,35 @@ export default function researchTools(pi: ExtensionAPI): void {
 					};
 
 					push(renderBoxLine(padCell("", innerWidth)));
-					push(row("Research session ready", "Quick starts", { leftAccent: true, rightAccent: true }));
-					push(row(`model: ${modelLabel}`, formatShortcutLine(shortcuts[0][0], shortcuts[0][1], rightWidth)));
-					push(row(`session: ${sessionLabel}`, formatShortcutLine(shortcuts[1][0], shortcuts[1][1], rightWidth)));
-					push(row(`directory: ${directoryLabel}`, formatShortcutLine(shortcuts[2][0], shortcuts[2][1], rightWidth)));
-					push(row("ask naturally; slash commands are optional", formatShortcutLine(shortcuts[3][0], shortcuts[3][1], rightWidth), { leftMuted: true }));
-					push(renderDivider());
-					push(renderBoxLine(theme.fg("accent", theme.bold(padCell("Recent activity", innerWidth)))));
-					for (const activityLine of activityLines.length > 0 ? activityLines : ["No messages yet in this session."]) {
-						push(renderBoxLine(padCell(activityLine, innerWidth)));
+					for (let index = 0; index < Math.max(leftLines.length, rightLines.length); index += 1) {
+						const left = leftLines[index] ?? "";
+						const right = rightLines[index] ?? "";
+						const isLogoLine = index < FEYNMAN_MARK_ART.length;
+						const isRightSectionHeading =
+							right === "Available Tools" || right === "Slash Commands" || right === "Research Skills" || right === "Project Agents" ||
+							right === "Recent Activity";
+						const isResearchHeading = right === "Research Skills";
+						const isAgentHeading = right === "Project Agents";
+						const isFooterLine = left.includes("/help");
+						push(
+							(() => {
+								const leftCell = isLogoLine
+									? styleAccentCell(left, leftWidth)
+									: !isFooterLine && index >= FEYNMAN_MARK_ART.length + 2
+										? styleMutedCell(left, leftWidth)
+										: padCell(left, leftWidth);
+								const rightCell = isResearchHeading
+									? styleSuccessCell(right, rightWidth)
+									: isAgentHeading
+										? styleWarningCell(right, rightWidth)
+										: isRightSectionHeading
+											? styleAccentCell(right, rightWidth)
+											: right.length > 0
+												? styleMutedCell(right, rightWidth)
+												: padCell(right, rightWidth);
+								return renderBoxLine(`${leftCell}${theme.fg("borderMuted", " │ ")}${rightCell}`);
+							})(),
+						);
 					}
 				}
 
@@ -772,11 +985,11 @@ export default function researchTools(pi: ExtensionAPI): void {
 	}
 
 	pi.on("session_start", async (_event, ctx) => {
-		installFeynmanHeader(ctx);
+		await installFeynmanHeader(ctx);
 	});
 
 	pi.on("session_switch", async (_event, ctx) => {
-		installFeynmanHeader(ctx);
+		await installFeynmanHeader(ctx);
 	});
 
 	pi.registerCommand("alpha-login", {
@@ -818,11 +1031,16 @@ export default function researchTools(pi: ExtensionAPI): void {
 	pi.registerCommand("help", {
 		description: "Show grouped Feynman commands and prefill the editor with a selected command.",
 		handler: async (_args, ctx) => {
-			const sections = buildFeynmanHelpSections();
+			const sections = buildFeynmanHelpSections(pi);
 			const items = sections.flatMap((section) => [
 				`--- ${section.title} ---`,
 				...section.commands.map((command) => `${command.usage} — ${command.description}`),
-			]);
+			]).filter((item, index, array) => {
+				if (!item.startsWith("---")) {
+					return true;
+				}
+				return array[index + 1] !== undefined && !array[index + 1].startsWith("---");
+			});
 
 			const selected = await ctx.ui.select("Feynman Help", items);
 			if (!selected || selected.startsWith("---")) {
@@ -1047,7 +1265,7 @@ export default function researchTools(pi: ExtensionAPI): void {
 	pi.registerTool({
 		name: "preview_file",
 		label: "Preview File",
-		description: "Open a markdown, LaTeX, PDF, or code artifact in the browser or a PDF viewer for human review.",
+		description: "Open a markdown, LaTeX, PDF, or code artifact in the browser or a PDF viewer for human review. Rendered HTML/PDF previews are temporary and do not replace the source artifact.",
 		parameters: Type.Object({
 			path: Type.String({
 				description: "Path to the file to preview.",
@@ -1079,6 +1297,7 @@ export default function researchTools(pi: ExtensionAPI): void {
 				sourcePath: resolvedPath,
 				target,
 				openedPath,
+				temporaryPreview: openedPath !== resolvedPath,
 			};
 			return {
 				content: [{ type: "text", text: formatToolText(result) }],

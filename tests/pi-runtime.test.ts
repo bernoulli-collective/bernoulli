@@ -1,0 +1,58 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+
+import { buildPiArgs, buildPiEnv, resolvePiPaths } from "../src/pi/runtime.js";
+
+test("buildPiArgs includes configured runtime paths and prompt", () => {
+	const args = buildPiArgs({
+		appRoot: "/repo/feynman",
+		workingDir: "/workspace",
+		sessionDir: "/sessions",
+		feynmanAgentDir: "/home/.feynman/agent",
+		systemPrompt: "system",
+		initialPrompt: "hello",
+		explicitModelSpec: "openai:gpt-5.4",
+		thinkingLevel: "medium",
+	});
+
+	assert.deepEqual(args, [
+		"--session-dir",
+		"/sessions",
+		"--extension",
+		"/repo/feynman/extensions/research-tools.ts",
+		"--skill",
+		"/repo/feynman/skills",
+		"--prompt-template",
+		"/repo/feynman/prompts",
+		"--system-prompt",
+		"system",
+		"--model",
+		"openai:gpt-5.4",
+		"--thinking",
+		"medium",
+		"hello",
+	]);
+});
+
+test("buildPiEnv wires Feynman paths into the Pi environment", () => {
+	const env = buildPiEnv({
+		appRoot: "/repo/feynman",
+		workingDir: "/workspace",
+		sessionDir: "/sessions",
+		feynmanAgentDir: "/home/.feynman/agent",
+		systemPrompt: "system",
+		feynmanVersion: "0.1.5",
+	});
+
+	assert.equal(env.PI_CODING_AGENT_DIR, "/home/.feynman/agent");
+	assert.equal(env.FEYNMAN_SESSION_DIR, "/sessions");
+	assert.equal(env.FEYNMAN_BIN_PATH, "/repo/feynman/bin/feynman.js");
+	assert.equal(env.FEYNMAN_PI_NPM_ROOT, "/repo/feynman/.pi/npm/node_modules");
+	assert.equal(env.FEYNMAN_MEMORY_DIR, "/home/.feynman/memory");
+});
+
+test("resolvePiPaths includes the Promise.withResolvers polyfill path", () => {
+	const paths = resolvePiPaths("/repo/feynman");
+
+	assert.equal(paths.promisePolyfillPath, "/repo/feynman/dist/system/promise-polyfill.js");
+});

@@ -14,5 +14,5 @@ Requirements:
   - paper changes needed
   - rebuttal language
 - Do not overclaim fixes that have not been implemented.
-- Save the rebuttal matrix to `outputs/` as markdown.
+- Save exactly one rebuttal matrix to `outputs/` as markdown.
 - End with a `Sources` section containing direct URLs for all inspected external sources.

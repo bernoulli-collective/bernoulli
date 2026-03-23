@@ -70,7 +70,7 @@ Inside the REPL:
 - `/replicate <paper or claim>` expands the replication prompt template
 - `/reading <topic>` expands the reading-list prompt template
 - `/memo <topic>` expands the general research memo prompt template
-- `/deepresearch <topic>` expands the thorough source-heavy research prompt template
+- `/deepresearch <topic>` runs a thorough source-heavy investigation workflow
 - `/autoresearch <idea>` expands the end-to-end idea-to-paper prompt template
 - `/compare <topic>` expands the source comparison prompt template
 - `/audit <item>` expands the paper/code audit prompt template
@@ -82,7 +82,7 @@ Inside the REPL:
 Package-powered workflows inside the REPL:
 
 - `/agents` opens the subagent and chain manager
-- `/run`, `/chain`, and `/parallel` delegate work to subagents
+- `/run` and `/parallel` delegate work to subagents when you want explicit decomposition
 - `/ps` opens the background process panel
 - `/schedule-prompt` manages recurring and deferred jobs
 - `/search` opens indexed session search
@@ -90,11 +90,30 @@ Package-powered workflows inside the REPL:
 
 Outside the REPL:
 
-- `feynman setup` configures alpha login, web research, and preview deps
+- `feynman setup` runs the full guided setup for model auth, alpha login, Pi web, and preview deps
+- `feynman model login <provider>` logs into a Pi OAuth model provider from the outer Feynman CLI
 - `feynman --alpha-login` signs in to alphaXiv
 - `feynman --alpha-status` checks alphaXiv auth
 - `feynman --doctor` checks models, auth, preview dependencies, and branded settings
 - `feynman --setup-preview` installs `pandoc` automatically on macOS/Homebrew systems when preview support is missing
+
+## Web Search Routing
+
+Feynman now treats web search as a small provider subsystem instead of a one-off prompt.
+The current Pi web stack underneath supports three runtime routes:
+
+- `auto` — prefer Perplexity when configured, otherwise fall back to Gemini
+- `perplexity` — force Perplexity Sonar
+- `gemini` — force Gemini
+
+Feynman exposes those through four user-facing choices in `feynman setup web`, but defaults to Pi web through `Gemini Browser` when nothing explicit is configured:
+
+- `Auto`
+- `Perplexity API`
+- `Gemini API`
+- `Gemini Browser`
+
+`Gemini Browser` is still the same Pi web-access path under the hood: it forces the Gemini route and expects a signed-in Chromium profile rather than an API key.
 
 ## Custom Tools
 
@@ -115,7 +134,6 @@ Feynman also ships bundled research subagents in `.pi/agents/`:
 - `verifier` for claim and source checking
 - `reviewer` for peer-review style criticism
 - `writer` for polished memo and draft writing
-- `deep` chain for gather → verify → synthesize
 - `review` chain for gather → verify → peer review
 - `auto` chain for plan → gather → verify → draft
 

@@ -112,7 +112,7 @@ if (existsSync(interactiveThemePath)) {
 		"    return {",
 		'        borderColor: (text) => " ".repeat(text.length),',
 		'        bgColor: (text) => theme.bg("userMessageBg", text),',
-		'        placeholderText: "Ask Feynman to research anything",',
+		'        placeholderText: "Type your message or /help for commands",',
 		'        placeholder: (text) => theme.fg("dim", text),',
 		"        selectList: getSelectListTheme(),",
 		"    };",

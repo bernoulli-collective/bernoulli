@@ -10,5 +10,5 @@ Requirements:
 - Summarize what should be monitored, what signals matter, and what counts as a meaningful change.
 - Use `schedule_prompt` to create the recurring or delayed follow-up instead of merely promising to check later.
 - If the user wants detached execution for the initial sweep, use `subagent` in background mode and report how to inspect status.
-- Save a durable baseline artifact to `outputs/`.
+- Save exactly one durable baseline artifact to `outputs/`.
 - End with a `Sources` section containing direct URLs for every source used.

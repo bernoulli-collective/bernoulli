@@ -20,5 +20,5 @@ Requirements:
   - likely reviewer objections
   - severity for each issue
   - revision plan in priority order
-- Save the review to `outputs/` as markdown.
+- Save exactly one review artifact to `outputs/` as markdown.
 - End with a `Sources` section containing direct URLs for every inspected external source.

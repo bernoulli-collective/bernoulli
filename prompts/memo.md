@@ -11,4 +11,4 @@ Requirements:
 - Read or inspect the top sources directly before making strong claims.
 - Distinguish facts, interpretations, and open questions.
 - End with a `Sources` section containing direct URLs for every source used.
-- Save the memo to `outputs/` as markdown if the user wants a durable artifact.
+- If the user wants a durable artifact, save exactly one memo to `outputs/` as markdown.

@@ -17,4 +17,4 @@ Requirements:
   - confidence
 - Distinguish agreement, disagreement, and uncertainty clearly.
 - End with a `Sources` section containing direct URLs for every source used.
-- Save the comparison to `outputs/` as markdown if the user wants a durable artifact.
+- If the user wants a durable artifact, save exactly one comparison to `outputs/` as markdown.
