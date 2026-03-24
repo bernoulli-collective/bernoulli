@@ -5,14 +5,40 @@ import { fileURLToPath } from "node:url";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const appRoot = resolve(here, "..");
-const piPackageRoot = resolve(appRoot, "node_modules", "@mariozechner", "pi-coding-agent");
+
+function findNodeModules() {
+	let dir = appRoot;
+	while (dir !== dirname(dir)) {
+		const nm = resolve(dir, "node_modules");
+		if (existsSync(nm)) return nm;
+		dir = dirname(dir);
+	}
+	return resolve(appRoot, "node_modules");
+}
+
+const nodeModules = findNodeModules();
+
+function findPackageRoot(packageName) {
+	const candidate = resolve(nodeModules, packageName);
+	if (existsSync(resolve(candidate, "package.json"))) return candidate;
+	return null;
+}
+
+const piPackageRoot = findPackageRoot("@mariozechner/pi-coding-agent");
+const piTuiRoot = findPackageRoot("@mariozechner/pi-tui");
+const piAiRoot = findPackageRoot("@mariozechner/pi-ai");
+
+if (!piPackageRoot) {
+	console.warn("[feynman] pi-coding-agent not found, skipping patches");
+	process.exit(0);
+}
+
 const packageJsonPath = resolve(piPackageRoot, "package.json");
 const cliPath = resolve(piPackageRoot, "dist", "cli.js");
 const bunCliPath = resolve(piPackageRoot, "dist", "bun", "cli.js");
 const interactiveModePath = resolve(piPackageRoot, "dist", "modes", "interactive", "interactive-mode.js");
 const interactiveThemePath = resolve(piPackageRoot, "dist", "modes", "interactive", "theme", "theme.js");
-const piTuiRoot = resolve(appRoot, "node_modules", "@mariozechner", "pi-tui");
-const editorPath = resolve(piTuiRoot, "dist", "components", "editor.js");
+const editorPath = piTuiRoot ? resolve(piTuiRoot, "dist", "components", "editor.js") : null;
 const workspaceRoot = resolve(appRoot, ".feynman", "npm", "node_modules");
 const webAccessPath = resolve(workspaceRoot, "pi-web-access", "index.ts");
 const sessionSearchIndexerPath = resolve(
@@ -85,7 +111,7 @@ if (existsSync(interactiveThemePath)) {
 	writeFileSync(interactiveThemePath, themeSource, "utf8");
 }
 
-if (existsSync(editorPath)) {
+if (editorPath && existsSync(editorPath)) {
 	let editorSource = readFileSync(editorPath, "utf8");
 	const importOriginal =
 		'import { getSegmenter, isPunctuationChar, isWhitespaceChar, truncateToWidth, visibleWidth } from "../utils.js";';
@@ -250,9 +276,9 @@ if (existsSync(sessionSearchIndexerPath)) {
 	}
 }
 
-const oauthPagePath = resolve(appRoot, "node_modules", "@mariozechner", "pi-ai", "dist", "utils", "oauth", "oauth-page.js");
+const oauthPagePath = piAiRoot ? resolve(piAiRoot, "dist", "utils", "oauth", "oauth-page.js") : null;
 
-if (existsSync(oauthPagePath)) {
+if (oauthPagePath && existsSync(oauthPagePath)) {
 	let source = readFileSync(oauthPagePath, "utf8");
 	const piLogo = 'const LOGO_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" aria-hidden="true"><path fill="#fff" fill-rule="evenodd" d="M165.29 165.29 H517.36 V400 H400 V517.36 H282.65 V634.72 H165.29 Z M282.65 282.65 V400 H400 V282.65 Z"/><path fill="#fff" d="M517.36 400 H634.72 V634.72 H517.36 Z"/></svg>`;';
 	if (source.includes(piLogo)) {

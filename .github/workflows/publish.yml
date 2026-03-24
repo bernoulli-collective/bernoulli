@@ -1,0 +1,31 @@
+name: Publish to npm
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: https://registry.npmjs.org
+      - run: npm ci
+      - run: npm run build
+      - run: npm test
+      - name: Publish if version changed
+        run: |
+          CURRENT=$(npm view @companion-ai/feynman version 2>/dev/null || echo "0.0.0")
+          LOCAL=$(node -p "require('./package.json').version")
+          if [ "$CURRENT" != "$LOCAL" ]; then
+            npm publish --access public
+          else
+            echo "Version $LOCAL already published, skipping"
+          fi
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
