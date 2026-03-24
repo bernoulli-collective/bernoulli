@@ -184,12 +184,19 @@
   border-radius: 0.5rem;
   padding: 1rem 1.25rem;
   overflow-x: auto;
+  overflow-y: visible;
   margin-bottom: 1.25rem;
   font-family: 'SF Mono', 'Fira Code', 'JetBrains Mono', monospace;
   font-size: 0.875rem;
   line-height: 1.7;
   background-color: var(--card) !important;
   color: var(--card-foreground);
+}
+
+.prose .astro-code {
+  position: relative !important;
+  background-color: var(--card) !important;
+  color: var(--card-foreground) !important;
 }
 
 .prose pre code {
@@ -214,7 +221,7 @@
   border-radius: 0.25rem;
   color: var(--muted-foreground);
   background: var(--background);
-  opacity: 0;
+  opacity: 0.6;
   transition: opacity 0.15s, color 0.15s;
   cursor: pointer;
   pointer-events: auto;
@@ -222,6 +229,35 @@
 
 .prose pre:hover .copy-code {
   opacity: 1;
+}
+
+.prose .astro-code .copy-code {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  z-index: 10;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  margin: 0;
+  border: 1px solid var(--border);
+  border-radius: 0.25rem;
+  color: var(--muted-foreground);
+  background: var(--background);
+  opacity: 0.6;
+  transition: opacity 0.15s, color 0.15s;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.prose .astro-code:hover .copy-code {
+  opacity: 1;
+}
+
+.prose .astro-code .copy-code:hover {
+  color: var(--primary);
 }
 
 .prose pre .copy-code:hover {
