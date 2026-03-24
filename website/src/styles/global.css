@@ -111,31 +111,34 @@ body {
   padding: 0;
 }
 
-.copy-code {
-  all: unset;
+.prose pre .copy-code {
   position: absolute;
   top: 0.75rem;
   right: 0.75rem;
+  z-index: 10;
   display: grid;
   place-items: center;
   width: 28px;
   height: 28px;
+  padding: 0;
+  margin: 0;
+  border: none;
   border-radius: 0.25rem;
   color: var(--color-text-dim);
   background: var(--color-surface-2);
   opacity: 0;
   transition: opacity 0.15s, color 0.15s;
   cursor: pointer;
+  pointer-events: auto;
 }
 
-pre:hover .copy-code {
+.prose pre:hover .copy-code {
   opacity: 1;
 }
 
-.copy-code:hover {
+.prose pre .copy-code:hover {
   color: var(--color-accent);
 }
-
 
 .prose table {
   width: 100%;
@@ -223,6 +226,18 @@ pre:hover .copy-code {
 ::selection {
   background: var(--color-accent-subtle);
   color: var(--color-text);
+}
+
+.dark .astro-code {
+  background-color: var(--shiki-dark-bg) !important;
+}
+
+.dark .astro-code code span {
+  color: var(--shiki-dark) !important;
+  background-color: var(--shiki-dark-bg) !important;
+  font-style: var(--shiki-dark-font-style) !important;
+  font-weight: var(--shiki-dark-font-weight) !important;
+  text-decoration: var(--shiki-dark-text-decoration) !important;
 }
 
 .agent-entry {

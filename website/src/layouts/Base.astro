@@ -37,8 +37,11 @@ const { title, description = 'Research-first AI agent', active = 'home' } = Astr
     document.addEventListener('astro:after-swap', function() {
       var stored = localStorage.getItem('theme');
       var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      if (stored === 'dark' || (!stored && prefersDark)) {
+      var shouldBeDark = stored === 'dark' || (!stored && prefersDark);
+      if (shouldBeDark) {
         document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
       }
       var isDark = document.documentElement.classList.contains('dark');
       var sun = document.getElementById('sun-icon');

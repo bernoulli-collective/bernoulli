@@ -1,14 +1,13 @@
 ---
 import Base from '../layouts/Base.astro';
-import AsciiLogo from '../components/AsciiLogo.astro';
 ---
 
 <Base title="Feynman — The open source AI research agent" active="home">
   <section class="text-center pt-24 pb-20 px-6">
     <div class="max-w-2xl mx-auto">
-      <h1 class="text-5xl sm:text-6xl font-bold tracking-tight mb-6" style="text-wrap: balance">The open source AI research agent</h1>
-      <p class="text-lg text-text-muted mb-10 leading-relaxed" style="text-wrap: pretty">Investigate topics, write papers, run experiments, review research, audit codebases &mdash; every output cited and source-grounded</p>
-      <button id="copy-btn" class="group inline-flex items-center justify-between gap-3 bg-surface rounded-lg px-5 py-3 mb-8 font-mono text-sm hover:border-accent/40 hover:text-accent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-lg border border-border max-w-full" aria-label="Copy install command">
+      <h1 class="text-5xl sm:text-6xl font-bold tracking-tight mb-6" style="text-wrap: balance">Research from the command line</h1>
+      <p class="text-lg text-text-muted mb-10 leading-relaxed" style="text-wrap: pretty">Feynman reads papers, searches the web, writes drafts, runs experiments, and cites every claim. Open source. Runs locally.</p>
+      <button id="copy-btn" class="group inline-flex items-center justify-between gap-3 bg-surface rounded-lg px-5 py-3 mb-8 font-mono text-sm border border-border hover:border-accent/40 hover:text-accent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent max-w-full" aria-label="Copy install command">
         <code class="text-accent text-left">curl -fsSL https://feynman.is/install | bash</code>
         <span id="copy-icon" class="shrink-0 text-text-dim group-hover:text-accent transition-colors" aria-hidden="true">
           <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" /><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" /></svg>
@@ -26,62 +25,63 @@ import AsciiLogo from '../components/AsciiLogo.astro';
 
   <section class="py-20 px-6">
     <div class="max-w-5xl mx-auto">
-      <h2 class="text-2xl font-bold text-center mb-12">What you type &rarr; what happens</h2>
-      <div class="bg-surface rounded-xl p-6 font-mono text-sm leading-loose max-w-2xl mx-auto">
+      <h2 class="text-2xl font-bold text-center mb-4">Ask a question, get a cited answer</h2>
+      <p class="text-center text-text-muted mb-12 max-w-xl mx-auto">Feynman dispatches research agents that search papers, crawl the web, and synthesize findings with inline citations back to the source.</p>
+      <div class="bg-surface rounded-xl p-6 font-mono text-sm leading-loose max-w-2xl mx-auto border border-border">
         <div class="flex gap-4"><span class="text-text-dim shrink-0">$</span><span><span class="text-accent">feynman</span> "what do we know about scaling laws"</span></div>
         <div class="text-text-dim mt-1 ml-6 text-xs">Searches papers and web, produces a cited research brief</div>
         <div class="mt-4 flex gap-4"><span class="text-text-dim shrink-0">$</span><span><span class="text-accent">feynman</span> deepresearch "mechanistic interpretability"</span></div>
-        <div class="text-text-dim mt-1 ml-6 text-xs">Multi-agent investigation with parallel researchers, synthesis, verification</div>
+        <div class="text-text-dim mt-1 ml-6 text-xs">Multi-agent deep dive with parallel researchers, synthesis, and verification</div>
         <div class="mt-4 flex gap-4"><span class="text-text-dim shrink-0">$</span><span><span class="text-accent">feynman</span> lit "RLHF alternatives"</span></div>
-        <div class="text-text-dim mt-1 ml-6 text-xs">Literature review with consensus, disagreements, open questions</div>
+        <div class="text-text-dim mt-1 ml-6 text-xs">Literature review covering consensus, disagreements, and open questions</div>
         <div class="mt-4 flex gap-4"><span class="text-text-dim shrink-0">$</span><span><span class="text-accent">feynman</span> audit 2401.12345</span></div>
         <div class="text-text-dim mt-1 ml-6 text-xs">Compares paper claims against the public codebase</div>
         <div class="mt-4 flex gap-4"><span class="text-text-dim shrink-0">$</span><span><span class="text-accent">feynman</span> replicate "chain-of-thought improves math"</span></div>
-        <div class="text-text-dim mt-1 ml-6 text-xs">Asks where to run, then builds a replication plan</div>
+        <div class="text-text-dim mt-1 ml-6 text-xs">Builds a replication plan, picks a compute target, runs the experiment</div>
       </div>
     </div>
   </section>
 
   <section class="py-20 px-6">
     <div class="max-w-5xl mx-auto">
-      <h2 class="text-2xl font-bold text-center mb-12">Workflows</h2>
-      <p class="text-center text-text-muted mb-10">Ask naturally or use slash commands as shortcuts.</p>
+      <h2 class="text-2xl font-bold text-center mb-4">Workflows</h2>
+      <p class="text-center text-text-muted mb-10 max-w-xl mx-auto">Structured research workflows you can trigger with a slash command or just ask for in natural language.</p>
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 max-w-4xl mx-auto">
-        <div class="bg-surface rounded-xl p-5">
+        <div class="bg-surface rounded-xl p-5 border border-border">
           <div class="font-mono text-sm text-accent mb-2">/deepresearch</div>
-          <p class="text-sm text-text-muted">Source-heavy multi-agent investigation</p>
+          <p class="text-sm text-text-muted">Multi-agent investigation across papers, web, and code</p>
         </div>
-        <div class="bg-surface rounded-xl p-5">
+        <div class="bg-surface rounded-xl p-5 border border-border">
           <div class="font-mono text-sm text-accent mb-2">/lit</div>
-          <p class="text-sm text-text-muted">Literature review from paper search and primary sources</p>
+          <p class="text-sm text-text-muted">Literature review from primary sources with consensus mapping</p>
         </div>
-        <div class="bg-surface rounded-xl p-5">
+        <div class="bg-surface rounded-xl p-5 border border-border">
           <div class="font-mono text-sm text-accent mb-2">/review</div>
-          <p class="text-sm text-text-muted">Simulated peer review with severity and revision plan</p>
+          <p class="text-sm text-text-muted">Simulated peer review with severity scores and a revision plan</p>
         </div>
-        <div class="bg-surface rounded-xl p-5">
+        <div class="bg-surface rounded-xl p-5 border border-border">
           <div class="font-mono text-sm text-accent mb-2">/audit</div>
-          <p class="text-sm text-text-muted">Paper vs. codebase mismatch audit</p>
+          <p class="text-sm text-text-muted">Check paper claims against what the code actually does</p>
         </div>
-        <div class="bg-surface rounded-xl p-5">
+        <div class="bg-surface rounded-xl p-5 border border-border">
           <div class="font-mono text-sm text-accent mb-2">/replicate</div>
-          <p class="text-sm text-text-muted">Replication plan with environment selection</p>
+          <p class="text-sm text-text-muted">Design and run a replication in a sandboxed Docker container</p>
         </div>
-        <div class="bg-surface rounded-xl p-5">
+        <div class="bg-surface rounded-xl p-5 border border-border">
           <div class="font-mono text-sm text-accent mb-2">/compare</div>
-          <p class="text-sm text-text-muted">Source comparison matrix</p>
+          <p class="text-sm text-text-muted">Side-by-side source comparison with agreement and conflict matrix</p>
         </div>
-        <div class="bg-surface rounded-xl p-5">
+        <div class="bg-surface rounded-xl p-5 border border-border">
           <div class="font-mono text-sm text-accent mb-2">/draft</div>
-          <p class="text-sm text-text-muted">Paper-style draft from research findings</p>
+          <p class="text-sm text-text-muted">Turn research findings into a polished paper-style draft</p>
         </div>
-        <div class="bg-surface rounded-xl p-5">
+        <div class="bg-surface rounded-xl p-5 border border-border">
           <div class="font-mono text-sm text-accent mb-2">/autoresearch</div>
-          <p class="text-sm text-text-muted">Autonomous experiment loop</p>
+          <p class="text-sm text-text-muted">Hypothesis &rarr; experiment &rarr; measure &rarr; repeat</p>
         </div>
-        <div class="bg-surface rounded-xl p-5">
+        <div class="bg-surface rounded-xl p-5 border border-border">
           <div class="font-mono text-sm text-accent mb-2">/watch</div>
-          <p class="text-sm text-text-muted">Recurring research watch</p>
+          <p class="text-sm text-text-muted">Recurring monitor for new papers, code, or product updates</p>
         </div>
       </div>
     </div>
@@ -89,24 +89,24 @@ import AsciiLogo from '../components/AsciiLogo.astro';
 
   <section class="py-20 px-6">
     <div class="max-w-5xl mx-auto">
-      <h2 class="text-2xl font-bold text-center mb-12">Agents</h2>
-      <p class="text-center text-text-muted mb-10">Four bundled research agents, dispatched automatically.</p>
+      <h2 class="text-2xl font-bold text-center mb-4">Agents that do the work</h2>
+      <p class="text-center text-text-muted mb-10 max-w-xl mx-auto">Feynman dispatches specialized agents behind the scenes. You ask a question &mdash; the right team assembles.</p>
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div class="bg-surface rounded-xl p-6 text-center">
+        <div class="bg-surface rounded-xl p-6 text-center border border-border">
           <div class="font-semibold text-accent mb-2">Researcher</div>
-          <p class="text-sm text-text-muted">Gathers evidence across papers, web, repos, and docs</p>
+          <p class="text-sm text-text-muted">Hunts for evidence across papers, the web, repos, and docs</p>
         </div>
-        <div class="bg-surface rounded-xl p-6 text-center">
+        <div class="bg-surface rounded-xl p-6 text-center border border-border">
           <div class="font-semibold text-accent mb-2">Reviewer</div>
-          <p class="text-sm text-text-muted">Simulated peer review with severity-graded feedback</p>
+          <p class="text-sm text-text-muted">Grades claims by severity, flags gaps, and suggests revisions</p>
         </div>
-        <div class="bg-surface rounded-xl p-6 text-center">
+        <div class="bg-surface rounded-xl p-6 text-center border border-border">
           <div class="font-semibold text-accent mb-2">Writer</div>
-          <p class="text-sm text-text-muted">Structured briefs and drafts from research notes</p>
+          <p class="text-sm text-text-muted">Structures notes into briefs, drafts, and paper-style output</p>
         </div>
-        <div class="bg-surface rounded-xl p-6 text-center">
+        <div class="bg-surface rounded-xl p-6 text-center border border-border">
           <div class="font-semibold text-accent mb-2">Verifier</div>
-          <p class="text-sm text-text-muted">Inline citations and source URL verification</p>
+          <p class="text-sm text-text-muted">Checks every citation, verifies URLs, removes dead links</p>
         </div>
       </div>
     </div>
@@ -114,27 +114,33 @@ import AsciiLogo from '../components/AsciiLogo.astro';
 
   <section class="py-20 px-6">
     <div class="max-w-5xl mx-auto">
-      <h2 class="text-2xl font-bold text-center mb-12">Tools</h2>
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-3xl mx-auto">
-        <div class="bg-surface rounded-xl p-5">
+      <h2 class="text-2xl font-bold text-center mb-4">Sources</h2>
+      <p class="text-center text-text-muted mb-10 max-w-xl mx-auto">Where Feynman finds information and what it uses to build answers.</p>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 max-w-4xl mx-auto">
+        <div class="bg-surface rounded-xl p-5 border border-border">
           <div class="font-semibold mb-1"><a href="https://www.alphaxiv.org/" class="text-accent hover:underline">AlphaXiv</a></div>
-          <p class="text-sm text-text-muted">Paper search, Q&A, code reading, persistent annotations</p>
+          <p class="text-sm text-text-muted">Paper search, Q&A, code reading, and persistent annotations</p>
         </div>
-        <div class="bg-surface rounded-xl p-5">
-          <div class="font-semibold mb-1"><a href="https://www.docker.com/" class="text-accent hover:underline">Docker</a></div>
-          <p class="text-sm text-text-muted">Isolated container execution for safe local experiments</p>
-        </div>
-        <div class="bg-surface rounded-xl p-5">
+        <div class="bg-surface rounded-xl p-5 border border-border">
           <div class="font-semibold mb-1">Web search</div>
-          <p class="text-sm text-text-muted">Gemini or Perplexity, zero-config default</p>
+          <p class="text-sm text-text-muted">Gemini or Perplexity, zero-config by default</p>
         </div>
-        <div class="bg-surface rounded-xl p-5">
-          <div class="font-semibold mb-1">Session search</div>
-          <p class="text-sm text-text-muted">Indexed recall across prior research sessions</p>
-        </div>
-        <div class="bg-surface rounded-xl p-5">
+        <div class="bg-surface rounded-xl p-5 border border-border">
           <div class="font-semibold mb-1">Preview</div>
           <p class="text-sm text-text-muted">Browser and PDF export of generated artifacts</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="py-20 px-6">
+    <div class="max-w-5xl mx-auto">
+      <h2 class="text-2xl font-bold text-center mb-4">Compute</h2>
+      <p class="text-center text-text-muted mb-10 max-w-xl mx-auto">Experiments run in sandboxed Docker containers on your machine. Your code stays local.</p>
+      <div class="grid grid-cols-1 gap-4 max-w-md mx-auto">
+        <div class="bg-surface rounded-xl p-5 border border-border">
+          <div class="font-semibold mb-1"><a href="https://www.docker.com/" class="text-accent hover:underline">Docker</a></div>
+          <p class="text-sm text-text-muted">Isolated container execution for safe local experiments</p>
         </div>
       </div>
     </div>
