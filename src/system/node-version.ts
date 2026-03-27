@@ -1,4 +1,4 @@
-export const MIN_NODE_VERSION = "20.18.1";
+export const MIN_NODE_VERSION = "20.19.0";
 
 type ParsedNodeVersion = {
 	major: number;

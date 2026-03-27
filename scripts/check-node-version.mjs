@@ -1,4 +1,4 @@
-const MIN_NODE_VERSION = "20.18.1";
+const MIN_NODE_VERSION = "20.19.0";
 
 function parseNodeVersion(version) {
 	const [major = "0", minor = "0", patch = "0"] = version.replace(/^v/, "").split(".");

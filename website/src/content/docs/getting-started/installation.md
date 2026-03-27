@@ -77,7 +77,7 @@ You can also pin an exact version by replacing `stable` with a version such as `
 
 ## pnpm
 
-If you already have Node.js `20.18.1` or newer installed, you can install Feynman globally via `pnpm`:
+If you already have Node.js `20.19.0` or newer installed, you can install Feynman globally via `pnpm`:
 
 ```bash
 pnpm add -g @companion-ai/feynman
@@ -91,7 +91,7 @@ pnpm dlx @companion-ai/feynman
 
 ## bun
 
-`bun add -g` and `bunx` still use your local Node runtime for Feynman itself, so the same Node.js `20.18.1+` requirement applies.
+`bun add -g` and `bunx` still use your local Node runtime for Feynman itself, so the same Node.js `20.19.0+` requirement applies.
 
 ```bash
 bun add -g @companion-ai/feynman

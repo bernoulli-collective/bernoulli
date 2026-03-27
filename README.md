@@ -25,7 +25,7 @@ curl -fsSL https://feynman.is/install | bash
 irm https://feynman.is/install.ps1 | iex
 ```
 
-If you install via `pnpm` or `bun` instead of the standalone bundle, Feynman requires Node.js `20.18.1` or newer.
+If you install via `pnpm` or `bun` instead of the standalone bundle, Feynman requires Node.js `20.19.0` or newer.
 
 ### Skills Only
 
