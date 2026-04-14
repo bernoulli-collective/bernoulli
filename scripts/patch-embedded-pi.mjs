@@ -5,6 +5,7 @@ import { homedir } from "node:os";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { FEYNMAN_LOGO_HTML } from "../logo.mjs";
+import { patchAlphaHubAuthSource } from "./lib/alpha-hub-auth-patch.mjs";
 import { patchPiExtensionLoaderSource } from "./lib/pi-extension-loader-patch.mjs";
 import { patchPiGoogleLegacySchemaSource } from "./lib/pi-google-legacy-schema-patch.mjs";
 import { PI_WEB_ACCESS_PATCH_TARGETS, patchPiWebAccessSource } from "./lib/pi-web-access-patch.mjs";
@@ -620,25 +621,11 @@ const alphaHubAuthPath = findPackageRoot("@companion-ai/alpha-hub")
 	: null;
 
 if (alphaHubAuthPath && existsSync(alphaHubAuthPath)) {
-	let source = readFileSync(alphaHubAuthPath, "utf8");
-	const oldSuccess = "'<html><body><h2>Logged in to Alpha Hub</h2><p>You can close this tab.</p></body></html>'";
-	const oldError = "'<html><body><h2>Login failed</h2><p>You can close this tab.</p></body></html>'";
-	const bodyAttr = `style="font-family:system-ui,sans-serif;text-align:center;padding-top:20vh;background:#050a08;color:#f0f5f2"`;
-	const logo = `<h1 style="font-family:monospace;font-size:48px;color:#34d399;margin:0">feynman</h1>`;
-	const newSuccess = `'<html><body ${bodyAttr}>${logo}<h2 style="color:#34d399;margin-top:16px">Logged in</h2><p style="color:#8aaa9a">You can close this tab.</p></body></html>'`;
-	const newError = `'<html><body ${bodyAttr}>${logo}<h2 style="color:#ef4444;margin-top:16px">Login failed</h2><p style="color:#8aaa9a">You can close this tab.</p></body></html>'`;
-	if (source.includes(oldSuccess)) {
-		source = source.replace(oldSuccess, newSuccess);
+	const source = readFileSync(alphaHubAuthPath, "utf8");
+	const patched = patchAlphaHubAuthSource(source);
+	if (patched !== source) {
+		writeFileSync(alphaHubAuthPath, patched, "utf8");
 	}
-	if (source.includes(oldError)) {
-		source = source.replace(oldError, newError);
-	}
-	const brokenWinOpen = "else if (plat === 'win32') execSync(`start \"${url}\"`);";
-	const fixedWinOpen = "else if (plat === 'win32') execSync(`cmd /c start \"\" \"${url}\"`);";
-	if (source.includes(brokenWinOpen)) {
-		source = source.replace(brokenWinOpen, fixedWinOpen);
-	}
-	writeFileSync(alphaHubAuthPath, source, "utf8");
 }
 
 if (existsSync(piMemoryPath)) {

@@ -33,6 +33,29 @@ To update the standalone Feynman app on macOS, Linux, or Windows, rerun the inst
 
 `feynman update` is different: it updates installed Pi packages inside Feynman's environment, not the standalone app bundle itself.
 
+## Uninstalling
+
+Feynman does not currently ship a dedicated `uninstall` command. Remove the standalone launcher and runtime bundle directly, then optionally remove the Feynman home directory if you also want to delete settings, auth, and sessions.
+
+On macOS or Linux:
+
+```bash
+rm -f ~/.local/bin/feynman
+rm -rf ~/.local/share/feynman
+# optional: remove settings, auth, sessions, and installed package state
+rm -rf ~/.feynman
+```
+
+On Windows PowerShell:
+
+```powershell
+Remove-Item "$env:LOCALAPPDATA\\Programs\\feynman" -Recurse -Force
+# optional: remove settings, auth, sessions, and installed package state
+Remove-Item "$HOME\\.feynman" -Recurse -Force
+```
+
+If you added the launcher directory to `PATH` manually, remove that entry as well.
+
 ## Skills only
 
 If you only want Feynman's research skills and not the full terminal runtime, install the skill library separately.

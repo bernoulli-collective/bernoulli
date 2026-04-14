@@ -259,6 +259,15 @@ Use this file to track chronology, not release notes. Keep entries short, factua
 - Blockers: I did not rerun a full broad deepresearch workflow end-to-end after this prompt-only hardening because those runs are materially longer and more expensive than the narrow reproductions already used to isolate the earlier deadlocks.
 - Next: Commit and push the prompt hardening, then, if needed, add a deterministic wrapper around final artifact promotion instead of relying only on prompt adherence.
 
+### 2026-04-14 09:30 PDT — wsl-login-and-uninstall-docs-pass
+
+- Objective: Fix the remaining WSL setup blocker and close the last actionable support issue instead of leaving the tracker open after the earlier workflow/model fixes.
+- Changed: Added a dedicated alpha-hub auth patch helper and tests; extended the alphaXiv login patch so WSL uses `wslview` when available and falls back to `cmd.exe /c start`, while also printing the auth URL explicitly for manual copy/paste if browser launch still fails; documented standalone uninstall steps in `README.md` and `website/src/content/docs/getting-started/installation.md`.
+- Verified: Added regression tests for the alpha-hub auth patch, reran `npm test`, `npm run typecheck`, and `npm run build`, and smoke-checked the patched alpha-hub source rewrite to confirm it injects both the WSL browser path and the explicit auth URL logging.
+- Failed / learned: This repo can patch alpha-hub's login UX reliably, but it still does not ship a destructive `feynman uninstall` command; the practical fix for the support issue is documented uninstall steps rather than a rushed cross-platform remover.
+- Blockers: I did not run a true WSL shell here, so the WSL fix is validated by the deterministic source patch plus tests rather than an actual Windows-hosted browser-launch repro.
+- Next: Push the WSL/login pass and close the stale issues and PRs that are already superseded by `main`.
+
 ### 2026-04-12 13:20 PDT — capital-france (citation verification brief)
 
 - Objective: Verify citations in the capital-of-France draft and produce a cited verifier brief.
