@@ -30,3 +30,19 @@ test("bundled prompts and skills do not contain blocked promotional product cont
 		}
 	}
 });
+
+test("draft workflow explicitly forbids fabricated results and unproven figures", () => {
+	const draftPrompt = readFileSync(join(repoRoot, "prompts", "draft.md"), "utf8");
+	const writerPrompt = readFileSync(join(repoRoot, ".feynman", "agents", "writer.md"), "utf8");
+	const verifierPrompt = readFileSync(join(repoRoot, ".feynman", "agents", "verifier.md"), "utf8");
+
+	for (const [label, content] of [
+		["draft prompt", draftPrompt],
+		["writer prompt", writerPrompt],
+		["verifier prompt", verifierPrompt],
+	] as const) {
+		assert.match(content, /Never (invent|fabricate)/i, `${label} must explicitly forbid invented or fabricated results`);
+		assert.match(content, /(figure|chart|image|table)/i, `${label} must cover visual/table provenance`);
+		assert.match(content, /(provenance|source|artifact|script|raw)/i, `${label} must require traceable support`);
+	}
+});
