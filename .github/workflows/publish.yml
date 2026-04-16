@@ -29,7 +29,8 @@ jobs:
         run: |
           LOCAL=$(node -p "require('./package.json').version")
           echo "version=$LOCAL" >> "$GITHUB_OUTPUT"
-          if gh release view "v$LOCAL" >/dev/null 2>&1; then
+          PUBLISHED=$(npm view @companion-ai/feynman version 2>/dev/null || true)
+          if [ "$PUBLISHED" = "$LOCAL" ] || gh release view "v$LOCAL" >/dev/null 2>&1; then
             echo "should_release=false" >> "$GITHUB_OUTPUT"
           else
             echo "should_release=true" >> "$GITHUB_OUTPUT"
