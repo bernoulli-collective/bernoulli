@@ -83,7 +83,7 @@ for (const scenario of CASES) {
 		const patched = patchPiSubagentsSource(scenario.file, scenario.input);
 
 		assert.match(patched, /function resolvePiAgentDir\(\): string \{/);
-		assert.match(patched, /process\.env\.PI_CODING_AGENT_DIR\?\.trim\(\)/);
+		assert.match(patched, /process\.env\.FEYNMAN_CODING_AGENT_DIR\?\.trim\(\) \|\| process\.env\.PI_CODING_AGENT_DIR\?\.trim\(\)/);
 		assert.ok(patched.includes(scenario.expected));
 		assert.ok(!patched.includes(scenario.original));
 	});

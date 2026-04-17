@@ -11,7 +11,7 @@ export const PI_SUBAGENTS_PATCH_TARGETS = [
 
 const RESOLVE_PI_AGENT_DIR_HELPER = [
 	"function resolvePiAgentDir(): string {",
-	'	const configured = process.env.PI_CODING_AGENT_DIR?.trim();',
+	'	const configured = process.env.FEYNMAN_CODING_AGENT_DIR?.trim() || process.env.PI_CODING_AGENT_DIR?.trim();',
 	'	if (!configured) return path.join(os.homedir(), ".pi", "agent");',
 	'	return configured.startsWith("~/") ? path.join(os.homedir(), configured.slice(2)) : configured;',
 	"}",
