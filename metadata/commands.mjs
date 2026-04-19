@@ -78,6 +78,7 @@ export const cliCommandSections = [
 			{ usage: "feynman chat [prompt]", description: "Start chat explicitly, optionally with an initial prompt." },
 			{ usage: "feynman help", description: "Show CLI help." },
 			{ usage: "feynman setup", description: "Run the guided setup wizard." },
+			{ usage: "feynman setup preview", description: "Install or verify preview dependencies." },
 			{ usage: "feynman doctor", description: "Diagnose config, auth, Pi runtime, and preview dependencies." },
 			{ usage: "feynman status", description: "Show the current setup summary." },
 		],

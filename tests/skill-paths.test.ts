@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
-import { dirname, join, resolve } from "node:path";
+import { dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
@@ -21,7 +21,7 @@ test("all local markdown references in bundled skills resolve in the installed s
 			const reference = match[1];
 			const installedSkillDir = join(simulatedInstallRoot, entry.name);
 			const installedTarget = resolve(installedSkillDir, reference);
-			const repoTarget = installedTarget.replace(simulatedInstallRoot, repoRoot);
+			const repoTarget = join(skillsRoot, relative(simulatedInstallRoot, installedTarget));
 			assert.ok(existsSync(repoTarget), `${skillPath} references missing installed markdown file ${reference}`);
 		}
 	}

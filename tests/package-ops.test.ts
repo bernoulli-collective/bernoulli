@@ -279,6 +279,43 @@ test("updateConfiguredPackages batches multiple npm updates into a single instal
 	assert.ok(invocations[0]?.includes("test-two@latest"));
 });
 
+test("updateConfiguredPackages updates a specific npm package through the npm install path", async () => {
+	const root = mkdtempSync(join(tmpdir(), "feynman-package-ops-"));
+	const workingDir = resolve(root, "project");
+	const agentDir = resolve(root, "agent");
+	const logPath = resolve(root, "npm-invocations.jsonl");
+	mkdirSync(workingDir, { recursive: true });
+
+	const scriptPath = writeFakeNpmScript(root, [
+		`import { appendFileSync } from "node:fs";`,
+		`import { resolve } from "node:path";`,
+		`const args = process.argv.slice(2);`,
+		`if (args.length === 2 && args[0] === "root" && args[1] === "-g") {`,
+		`  console.log(resolve(${JSON.stringify(root)}, "npm-global", "lib", "node_modules"));`,
+		`  process.exit(0);`,
+		`}`,
+		`appendFileSync(${JSON.stringify(logPath)}, JSON.stringify(args) + "\\n", "utf8");`,
+		"process.exit(0);",
+	].join("\n"));
+
+	writeSettings(agentDir, {
+		npmCommand: [process.execPath, scriptPath],
+		packages: ["npm:@samfp/pi-memory"],
+	});
+	createInstalledGlobalPackage(root, "@samfp/pi-memory", "1.0.0");
+
+	const result = await updateConfiguredPackages(workingDir, agentDir, "npm:@samfp/pi-memory");
+
+	assert.deepEqual(result.skipped, []);
+	assert.deepEqual(result.updated, ["npm:@samfp/pi-memory"]);
+
+	const invocations = readFileSync(logPath, "utf8").trim().split("\n").map((line) => JSON.parse(line) as string[]);
+	assert.equal(invocations.length, 1);
+	assert.ok(invocations[0]?.includes("install"));
+	assert.ok(invocations[0]?.includes("--legacy-peer-deps"));
+	assert.ok(invocations[0]?.includes("@samfp/pi-memory@latest"));
+});
+
 test("updateConfiguredPackages skips native package updates on unsupported Node majors", async () => {
 	const root = mkdtempSync(join(tmpdir(), "feynman-package-ops-"));
 	const workingDir = resolve(root, "project");

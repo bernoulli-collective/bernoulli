@@ -25,6 +25,7 @@ import {
 	listOptionalPackagePresetInstallTargets,
 	listOptionalPackagePresets,
 	normalizeOptionalPackagePresetName,
+	resolvePackageUpdateSources,
 } from "./pi/package-presets.js";
 import { normalizeFeynmanSettings, normalizeThinkingLevel, parseModelSpec } from "./pi/settings.js";
 import { applyFeynmanPackageManagerEnv } from "./pi/runtime.js";
@@ -191,16 +192,24 @@ async function handleModelCommand(subcommand: string | undefined, args: string[]
 
 async function handleUpdateCommand(workingDir: string, feynmanAgentDir: string, source?: string): Promise<void> {
 	try {
-		const result = await updateConfiguredPackages(workingDir, feynmanAgentDir, source);
-		if (result.updated.length === 0) {
+		const updateSources = source ? resolvePackageUpdateSources(source) : [undefined];
+		const results = [];
+		for (const updateSource of updateSources) {
+			results.push(await updateConfiguredPackages(workingDir, feynmanAgentDir, updateSource));
+		}
+
+		const updated = results.flatMap((result) => result.updated);
+		const skipped = results.flatMap((result) => result.skipped);
+
+		if (updated.length === 0) {
 			console.log("All packages up to date.");
 			return;
 		}
 
-		for (const updatedSource of result.updated) {
+		for (const updatedSource of updated) {
 			console.log(`Updated ${updatedSource}`);
 		}
-		for (const skippedSource of result.skipped) {
+		for (const skippedSource of skipped) {
 			console.log(`Skipped ${skippedSource} on Node ${process.versions.node} (native packages are only supported through Node ${MAX_NATIVE_PACKAGE_NODE_MAJOR}.x).`);
 		}
 		console.log("All packages up to date.");
@@ -209,6 +218,11 @@ async function handleUpdateCommand(workingDir: string, feynmanAgentDir: string, 
 		if (message.includes("No supported package manager found")) {
 			console.log("No package manager is available for live package updates.");
 			console.log("If you installed the standalone app, rerun the installer to get newer bundled packages.");
+			return;
+		}
+		if (message.includes("Installing pi-generative-ui failed")) {
+			console.log(message);
+			console.log("Skipped optional generative-ui update.");
 			return;
 		}
 
@@ -319,6 +333,11 @@ async function handlePackagesCommand(subcommand: string | undefined, args: strin
 			console.log("Install npm, pnpm, or bun, or rerun the standalone installer for bundled package updates.");
 			return;
 		}
+		if (message.includes("Installing pi-generative-ui failed")) {
+			console.log(message);
+			console.log("Skipped optional generative-ui install.");
+			return;
+		}
 
 		throw error;
 	}
@@ -396,6 +415,25 @@ export function resolvePiPromptOptions(
 	return { initialPrompt: resolvedPrompt };
 }
 
+export function appendWorkflowFlagPositionals(
+	command: string | undefined,
+	rest: string[],
+	values: Record<string, string | boolean | undefined>,
+): string[] {
+	if (command !== "summarize") {
+		return rest;
+	}
+
+	const appended = [...rest];
+	for (const flag of ["window-size", "overlap", "tier1-threshold", "tier2-threshold"] as const) {
+		const value = values[flag];
+		if (typeof value === "string") {
+			appended.push(`--${flag}`, value);
+		}
+	}
+	return appended;
+}
+
 export function shouldRunInteractiveSetup(
 	explicitModelSpec: string | undefined,
 	currentModelSpec: string | undefined,
@@ -443,7 +481,11 @@ export async function main(): Promise<void> {
 			"service-tier": { type: "string" },
 			"session-dir": { type: "string" },
 			"setup-preview": { type: "boolean" },
+			"tier1-threshold": { type: "string" },
+			"tier2-threshold": { type: "string" },
 			thinking: { type: "string" },
+			overlap: { type: "string" },
+			"window-size": { type: "string" },
 		},
 	});
 
@@ -507,6 +549,14 @@ export async function main(): Promise<void> {
 	}
 
 	if (command === "setup") {
+		if (rest[0] === "preview") {
+			const result = setupPreviewDependencies();
+			console.log(result.message);
+			return;
+		}
+		if (rest[0]) {
+			throw new Error(`Unknown setup command: ${rest[0]}`);
+		}
 		await runSetup({
 			settingsPath: feynmanSettingsPath,
 			bundledSettingsPath,
@@ -609,7 +659,8 @@ export async function main(): Promise<void> {
 	}
 
 	const workflowCommandNames = new Set(readPromptSpecs(appRoot).filter((s) => s.topLevelCli).map((s) => s.name));
-	const promptOptions = resolvePiPromptOptions(command, rest, values.prompt, workflowCommandNames);
+	const workflowRest = appendWorkflowFlagPositionals(command, rest, values);
+	const promptOptions = resolvePiPromptOptions(command, workflowRest, values.prompt, workflowCommandNames);
 	await launchPiChat({
 		appRoot,
 		workingDir,

@@ -211,6 +211,7 @@ async function runPackageManagerInstall(
 	}
 
 	args.push(...specs);
+	const suppressKnownNativeFailureOutput = process.platform === "darwin" && specs.some((spec) => spec.startsWith("pi-generative-ui"));
 
 	await new Promise<void>((resolvePromise, reject) => {
 		const child = spawn(packageManagerCommand.command, args, {
@@ -219,14 +220,21 @@ async function runPackageManagerInstall(
 			env: childPackageManagerEnv(),
 		});
 
-		child.stdout?.on("data", (chunk) => relayFilteredOutput(chunk, process.stdout));
-		child.stderr?.on("data", (chunk) => relayFilteredOutput(chunk, process.stderr));
+		child.stdout?.on("data", (chunk) => {
+			if (!suppressKnownNativeFailureOutput) {
+				relayFilteredOutput(chunk, process.stdout);
+			}
+		});
+		child.stderr?.on("data", (chunk) => {
+			if (!suppressKnownNativeFailureOutput) {
+				relayFilteredOutput(chunk, process.stderr);
+			}
+		});
 
 		child.on("error", reject);
 		child.on("exit", (code) => {
 			if ((code ?? 1) !== 0) {
-				const installingGenerativeUi = specs.some((spec) => spec.startsWith("pi-generative-ui"));
-				if (installingGenerativeUi && process.platform === "darwin") {
+				if (suppressKnownNativeFailureOutput) {
 					reject(
 						new Error(
 							"Installing pi-generative-ui failed. Its native glimpseui dependency did not compile against the current macOS/Xcode toolchain. Try the npm-installed Feynman path with your local Node toolchain or skip this optional preset for now.",
@@ -343,6 +351,22 @@ export async function updateConfiguredPackages(
 	const { settingsManager, packageManager } = createPackageContext(workingDir, agentDir);
 
 	if (source) {
+		const parsed = parseNpmSource(source);
+		if (parsed) {
+			if (shouldSkipNativeSource(source)) {
+				return { updated: [], skipped: [source] };
+			}
+
+			const configured = packageManager.listConfiguredPackages();
+			const match = configured.find((entry) => entry.source === source);
+			if (!match) {
+				throw new Error(`No matching package found for ${source}`);
+			}
+
+			await runPackageManagerInstall(settingsManager, workingDir, agentDir, match.scope, dedupeNpmSources([source], true));
+			return { updated: [source], skipped: [] };
+		}
+
 		await packageManager.update(source);
 		return { updated: [source], skipped: [] };
 	}

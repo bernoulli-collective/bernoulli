@@ -12,6 +12,7 @@ import {
 	listOptionalPackagePresets,
 	NATIVE_PACKAGE_SOURCES,
 	normalizeOptionalPackagePresetName,
+	resolvePackageUpdateSources,
 	shouldPruneLegacyDefaultPackages,
 	supportsNativePackageSources,
 } from "../src/pi/package-presets.js";
@@ -88,6 +89,16 @@ test("optional package presets map friendly aliases", () => {
 	assert.deepEqual(listOptionalPackagePresets("linux"), []);
 	assert.deepEqual(listOptionalPackagePresetInstallTargets("linux"), []);
 	assert.equal(shouldPruneLegacyDefaultPackages(["npm:custom"]), false);
+});
+
+test("package update sources map core and optional aliases", () => {
+	assert.deepEqual(resolvePackageUpdateSources("memory"), ["npm:@samfp/pi-memory"]);
+	assert.deepEqual(resolvePackageUpdateSources("pi-memory"), ["npm:@samfp/pi-memory"]);
+	assert.deepEqual(resolvePackageUpdateSources("session-search"), ["npm:@kaiserlich-dev/pi-session-search"]);
+	assert.deepEqual(resolvePackageUpdateSources("generative-ui", "darwin"), ["npm:pi-generative-ui"]);
+	assert.deepEqual(resolvePackageUpdateSources("all-extras", "darwin"), ["npm:pi-generative-ui"]);
+	assert.deepEqual(resolvePackageUpdateSources("npm:@samfp/pi-memory"), ["npm:@samfp/pi-memory"]);
+	assert.deepEqual(resolvePackageUpdateSources("custom-package"), ["custom-package"]);
 });
 
 test("supportsNativePackageSources disables sqlite-backed packages on Node 25+", () => {

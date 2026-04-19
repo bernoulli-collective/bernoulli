@@ -538,7 +538,7 @@ for (const entryPath of [cliPath, bunCliPath].filter(Boolean)) {
 
 if (terminalPath && existsSync(terminalPath)) {
 	let terminalSource = readFileSync(terminalPath, "utf8");
-	if (!terminalSource.includes("stdinErrorHandler;")) {
+	if (!terminalSource.includes("stdinErrorHandler = (error) =>")) {
 		terminalSource = terminalSource.replace(
 			"    stdinBuffer;\n    stdinDataHandler;\n",
 			[

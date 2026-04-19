@@ -4,7 +4,7 @@ import { mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
-import { resolveInitialPrompt, resolvePiPromptOptions, shouldRunInteractiveSetup } from "../src/cli.js";
+import { appendWorkflowFlagPositionals, resolveInitialPrompt, resolvePiPromptOptions, shouldRunInteractiveSetup } from "../src/cli.js";
 import { buildModelStatusSnapshotFromRecords, chooseRecommendedModel } from "../src/model/catalog.js";
 import { resolveModelProviderForCommand, setDefaultModelSpec } from "../src/model/commands.js";
 import { createModelRegistry } from "../src/model/registry.js";
@@ -193,6 +193,19 @@ test("resolveInitialPrompt maps top-level research commands to Pi slash workflow
 	assert.equal(resolveInitialPrompt("log", [], undefined, workflows), "/log");
 	assert.equal(resolveInitialPrompt("chat", ["hello"], undefined, workflows), "hello");
 	assert.equal(resolveInitialPrompt("unknown", ["topic"], undefined, workflows), "unknown topic");
+});
+
+test("appendWorkflowFlagPositionals preserves summarize CLI flags parsed after positionals", () => {
+	assert.deepEqual(
+		appendWorkflowFlagPositionals("summarize", ["paper.md"], {
+			"window-size": "2000",
+			overlap: "200",
+			"tier1-threshold": "8000",
+			"tier2-threshold": "20000",
+		}),
+		["paper.md", "--window-size", "2000", "--overlap", "200", "--tier1-threshold", "8000", "--tier2-threshold", "20000"],
+	);
+	assert.deepEqual(appendWorkflowFlagPositionals("review", ["paper.md"], { "window-size": "2000" }), ["paper.md"]);
 });
 
 test("resolvePiPromptOptions keeps top-level workflows interactive when stdin is a tty", () => {

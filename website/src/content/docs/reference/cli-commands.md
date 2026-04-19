@@ -15,6 +15,7 @@ This page covers the dedicated Feynman CLI commands and flags. Workflow commands
 | `feynman chat [prompt]` | Start chat explicitly, optionally with an initial prompt |
 | `feynman help` | Show CLI help |
 | `feynman setup` | Run the guided setup wizard |
+| `feynman setup preview` | Install or verify preview dependencies |
 | `feynman doctor` | Diagnose config, auth, Pi runtime, and preview dependencies |
 | `feynman status` | Show the current setup summary (model, auth, packages) |
 
@@ -55,6 +56,15 @@ Use `feynman packages list` to see which optional packages are available on your
 | --- | --- |
 | `feynman search status` | Show Pi web-access status and config path |
 
+## REPL hotkeys
+
+Inside the interactive REPL, use `/hotkeys` to show the live keyboard map. The default reasoning controls are:
+
+| Hotkey | Action |
+| --- | --- |
+| `Shift+Tab` | Cycle thinking/reasoning level |
+| `Ctrl+T` | Toggle thinking block visibility |
+
 ## Workflow commands
 
 All research workflow slash commands can also be invoked directly from the CLI:
@@ -85,4 +95,4 @@ These are equivalent to launching the REPL and typing the corresponding slash co
 | `--alpha-logout` | Clear alphaXiv auth and exit |
 | `--alpha-status` | Show alphaXiv auth status and exit |
 | `--doctor` | Alias for `feynman doctor` |
-| `--setup-preview` | Install preview dependencies (pandoc) |
+| `--setup-preview` | Alias for `feynman setup preview` |

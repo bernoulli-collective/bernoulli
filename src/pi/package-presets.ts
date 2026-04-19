@@ -22,6 +22,13 @@ export const NATIVE_PACKAGE_SOURCES = [
 	"npm:@samfp/pi-memory",
 ] as const;
 
+const CORE_PACKAGE_UPDATE_ALIASES: Record<string, (typeof CORE_PACKAGE_SOURCES)[number]> = {
+	memory: "npm:@samfp/pi-memory",
+	"pi-memory": "npm:@samfp/pi-memory",
+	"session-search": "npm:@kaiserlich-dev/pi-session-search",
+	"pi-session-search": "npm:@kaiserlich-dev/pi-session-search",
+};
+
 export const MAX_NATIVE_PACKAGE_NODE_MAJOR = 24;
 
 export const OPTIONAL_PACKAGE_PRESETS = {
@@ -124,4 +131,19 @@ export function listOptionalPackagePresets(platform?: NodeJS.Platform): Array<{
 export function listOptionalPackagePresetInstallTargets(platform?: NodeJS.Platform): string[] {
 	const names = listOptionalPackagePresets(platform).map((preset) => preset.name);
 	return names.length > 0 ? [...names, "all-extras"] : [];
+}
+
+export function resolvePackageUpdateSources(name: string, platform: NodeJS.Platform = process.platform): string[] {
+	const trimmed = name.trim();
+	if (!trimmed) return [];
+	if (trimmed.startsWith("npm:") || trimmed.startsWith("github:") || trimmed.startsWith("file:")) {
+		return [trimmed];
+	}
+
+	const normalized = trimmed.toLowerCase();
+	const coreSource = CORE_PACKAGE_UPDATE_ALIASES[normalized];
+	if (coreSource) return [coreSource];
+
+	const optionalSources = getOptionalPackagePresetSources(normalized, platform);
+	return optionalSources ?? [trimmed];
 }

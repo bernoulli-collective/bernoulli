@@ -4,6 +4,30 @@ This file is the public release history for Feynman. Keep entries user-facing: w
 
 GitHub release notes are generated from the matching `## vX.Y.Z` section in this file.
 
+## v0.2.38 - 2026-04-19
+
+### Fixes
+
+- Fixed `feynman update memory` and `feynman update session-search` so friendly core-package aliases resolve to the correct npm package sources and use Feynman's npm install path with peer-dependency compatibility flags.
+- Fixed `feynman summarize ... --window-size ...` and related summarize tuning flags when the flags appear after the source positional.
+- Fixed `feynman setup preview` so it actually runs the preview dependency check, matching the legacy `--setup-preview` alias.
+- Made optional `generative-ui` install/update failures degrade cleanly on macOS toolchains where upstream `glimpseui` cannot compile, without dumping thousands of Swift compiler lines.
+- Reduced deepresearch TUI redraw churn by freezing the Feynman header's Last Activity snapshot during live streaming work instead of recomputing it every render.
+- Fixed bundled skills that referenced prompt templates through broken installed relative paths.
+- Fixed the embedded Pi patcher so repeated runtime preparation does not duplicate the TUI stdin error handler.
+
+### Documentation
+
+- Documented `feynman setup preview`.
+- Documented the existing `Shift+Tab` thinking-level hotkey and `/hotkeys` discovery path.
+
+### Validation
+
+- Full local tests passed: 124/124.
+- Typecheck, build, and clean website build passed.
+- Local CLI matrix passed for help, doctor, status, model list/tier, search status/set, alpha status, setup preview, packages list/install, and package update aliases.
+- End-to-end workflow runs completed for chat, summarize, review, compare, audit, draft, lit, deepresearch with confirmation, replicate, watch/jobs, log, and a bounded autoresearch loop.
+
 ## v0.2.37 - 2026-04-19
 
 ### Fixes
