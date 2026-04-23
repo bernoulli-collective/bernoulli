@@ -11,6 +11,11 @@
 
 ---
 
+### Key changes in this fork:
+- Situated summary of work. See this repo for [biophysics examples](https://github.com/bernoulli-collective/bernoulli-biophysics/tree/main/lit-reviews)
+- Jiabin Huang's awesome research skills, including: cold emailing via running `/paper-outreach`
+
+
 ### Installation
 
 **macOS / Linux:**
