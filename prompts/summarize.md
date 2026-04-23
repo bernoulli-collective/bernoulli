@@ -59,7 +59,7 @@ Log: `[summarize] tier=<N> chars=<count>`
 
 ## Tier 1 — Direct read
 
-Read `outputs/.notes/<slug>-raw.txt` in full. Summarize directly using the output format. Write to `outputs/<slug>-summary.md`.
+Read `outputs/.notes/<slug>-raw.txt` in full, then produce the Levels 0–3 output described in "Output format" below. Write to `outputs/<slug>-summary.md`.
 
 ---
 
@@ -80,7 +80,7 @@ For each window:
 2. Append to `outputs/.notes/<slug>-notes.md` before reading the next window. This is the checkpoint: if the session is interrupted, processed windows survive.
 3. Log: `[summarize] window <N>/<total> done`
 
-Synthesize `outputs/.notes/<slug>-notes.md` into `outputs/<slug>-summary.md`.
+Synthesize `outputs/.notes/<slug>-notes.md` into `outputs/<slug>-summary.md` using the Levels 0–3 structure in "Output format".
 
 ---
 
@@ -140,13 +140,15 @@ When synthesizing:
 - **Resolve boundary conflicts**: for adjacent-chunk contradictions, prefer the version with more supporting context.
 - **Remove BOUNDARY PARTIAL markers** where a complete version exists in a neighbouring chunk.
 
+Then produce the Levels 0–3 output defined in "Output format" from the deduplicated chunk summaries. Level 0 is the only step allowed to consult external sources, and only the main-agent synthesizer performs it — subagents never fetched the web.
+
 Write to `outputs/<slug>-summary.md`.
 
 ---
 
 ## Output format
 
-All tiers produce the same artifact at `outputs/<slug>-summary.md`:
+All tiers produce the same artifact at `outputs/<slug>-summary.md`, using the levelled reading method below. Tier only controls how the source was ingested; the synthesized output structure does not change with tier.
 
 ```markdown
 # Summary: [document title or source filename]
@@ -155,20 +157,22 @@ All tiers produce the same artifact at `outputs/<slug>-summary.md`:
 **Date:** [YYYY-MM-DD]
 **Tier:** [1 / 2 (N windows) / 3 (N chunks)]
 
-## Key Claims
-[3-7 most important assertions, each as a bullet]
+## Level 0 — Authors in the field
+You are a world-class expert in this domain. Look up the first authors and summarize their research canon in 1–2 lines, and where their positions sit in contemporary work.
+*(This is the only step that may use external lookup, and only the main synthesizer performs it. In Tier 3, chunk subagents never fetched the web.)*
 
-## Methodology
-[Approach, dataset, evaluation, baselines — omit for non-research documents]
+## Level 1 — Situating the work
+Situate this source in historical context and explain the big picture of its contribution. Identify the 3 strongest technical hinges buried in the material, rank them by originality, and show precisely where each challenges or extends existing literature. Bold text very selectively. Explain jargon to a 2nd year undergraduate student with basic familiarity with cognitive science, physics, neurotech.
 
-## Limitations
-[What the source explicitly flags as weak, incomplete, or out of scope]
+## Level 2 — Methodology from primitives
+As a research-methodology expert, explain from the primitives level how the authors designed the pipeline, the quality and type of evidence and reasoning used, and the internal consistency of the argument. 
 
-## Verdict
-[One paragraph: what this document establishes, its credibility, who should read it]
+## Level 3 — Michelin table questions
+As a leading expert seated with the authors at a 3-star Michelin restaurant, read their discussion / looking-forward section granularly. Pose 3 quirky follow-up questions you would raise at the table.
 
 ## Sources
 1. [Title or filename] — [URL or file path]
+   *(If Level 0 consulted external references, list them here as additional numbered sources.)*
 
 ## Coverage gaps *(Tier 3 only — omit if all chunks succeeded)*
 [Missing chunk indices and their approximate byte ranges]
@@ -176,4 +180,4 @@ All tiers produce the same artifact at `outputs/<slug>-summary.md`:
 
 Before you stop, verify on disk that `outputs/<slug>-summary.md` exists.
 
-Sources contains only the single source confirmed reachable in Step 1. No verifier subagent is needed — there are no URLs constructed from memory to verify.
+The Sources list starts with the single source confirmed reachable in Step 1. Any external references introduced by Level 0 are appended there by the synthesizer; chunk subagents in Tier 3 never contribute to it.
