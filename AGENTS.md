@@ -77,3 +77,7 @@ Never use generic names like `research.md`, `draft.md`, `brief.md`, or `summary.
 - Prefer file-based handoffs over dumping large intermediate results back into parent context.
 - The lead agent is responsible for reconciling task completion. Subagents may not silently skip assigned tasks; skipped or merged tasks must be recorded in the plan artifact.
 - For critical claims, require at least one adversarial verification pass after synthesis. Fix fatal issues before delivery or surface them explicitly.
+
+## Toolchain
+- Use python3
+- For python, use uv for package management

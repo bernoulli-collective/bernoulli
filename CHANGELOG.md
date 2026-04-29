@@ -438,3 +438,21 @@ Use this file to track chronology, not release notes. Keep entries short, factua
 - Failed / learned: No hard subagent failure; the main issue was source hygiene, especially bot-gated DOI landing pages for older or publisher-hosted articles.
 - Blockers: None for delivery.
 - Next: If requested, summarize one or more of the top-ranked Andersen papers into per-paper notes.
+
+### 2026-04-29 13:10 local — tomdlt
+
+- Objective: Map the research canon of Tom Dupré la Tour and deliver `outputs/tomdlt-canon.md` with publication, trajectory, and verification notes.
+- Changed: Read repo instructions and `CHANGELOG.md`; identified Tom Dupré la Tour's homepage and scholar/indexing profiles as the main source surfaces; created plan artifact at `outputs/.plans/tomdlt.md`.
+- Verified: Confirmed the public homepage states current OpenAI role plus prior UC Berkeley Gallant Lab and Télécom ParisTech affiliations, and exposes a structured publications section.
+- Failed / learned: There is no separate lab website; this run will treat the PI homepage as the canonical source and use Scholar/Loop/researchr/DBLP only for completeness checks.
+- Blockers: Need a clean publication extraction, topic synthesis, concept diagram, and source-verification pass.
+- Next: Write the publication log, then spawn researcher and verifier subagents on grounded source material.
+
+### 2026-04-29 15:18 local — tomdlt
+
+- Objective: Finish the Tom Dupré la Tour lab-canon workflow with durable artifacts, verification, and registration attempt.
+- Changed: Wrote `notes/tomdlt-publications.md`, `notes/tomdlt-trajectories.md`, `notes/tomdlt-verification.md`, `outputs/tomdlt-canon-diagram.md`, and final canon map `outputs/tomdlt-canon.md`.
+- Verified: Confirmed the required canon, publication, trajectory, and verification files exist on disk; manually checked all URLs cited in the trajectory notes and recorded HTTP results; the homepage publication list was more complete than DBLP/researchr for this PI.
+- Failed / learned: Both `researcher` and `verifier` subagents returned empty output files, so synthesis and verification were completed directly; DB registration failed because `/Users/harvest/nova/bernoulli-db/log_output.py` was missing.
+- Blockers: No rendered Mermaid PNG/SVG because no Mermaid rendering tool was exposed; saved Mermaid source instead.
+- Next: If requested, summarize one of the top-ranked papers starting with the 2017 DAR paper, 2022 banded ridge paper, or 2024 sparse autoencoder paper.
