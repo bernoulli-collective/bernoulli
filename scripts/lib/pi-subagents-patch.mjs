@@ -169,6 +169,38 @@ export function patchPiSubagentsSource(relativePath, source) {
 				'\tconst userDir = fs.existsSync(userDirNew) ? userDirNew : userDirOld;',
 				'\tconst userDir = path.join(resolvePiAgentDir(), "agents");',
 			);
+			// pi-subagents@0.17.0 introduced a discoverAgentsAll() body that uses
+			// `userDir` before its declaration (TDZ). Insert the declaration
+			// immediately after `userDirNew` and drop the late one before `return`.
+			patched = replaceAll(
+				patched,
+				[
+					'\tconst userDirOld = path.join(os.homedir(), ".pi", "agent", "agents");',
+					'\tconst userDirNew = path.join(os.homedir(), ".agents");',
+					'\tconst { readDirs: projectDirs, preferredDir: projectDir } = resolveNearestProjectAgentDirs(cwd);',
+				].join("\n"),
+				[
+					'\tconst userDirOld = path.join(os.homedir(), ".pi", "agent", "agents");',
+					'\tconst userDirNew = path.join(os.homedir(), ".agents");',
+					'\tconst userDir = path.join(resolvePiAgentDir(), "agents");',
+					'\tconst { readDirs: projectDirs, preferredDir: projectDir } = resolveNearestProjectAgentDirs(cwd);',
+				].join("\n"),
+			);
+			patched = replaceAll(
+				patched,
+				[
+					'\t];',
+					'',
+					'\tconst userDir = path.join(resolvePiAgentDir(), "agents");',
+					'',
+					'\treturn { builtin, user, project, chains, userDir, projectDir, userSettingsPath, projectSettingsPath };',
+				].join("\n"),
+				[
+					'\t];',
+					'',
+					'\treturn { builtin, user, project, chains, userDir, projectDir, userSettingsPath, projectSettingsPath };',
+				].join("\n"),
+			);
 			break;
 		case "artifacts.ts":
 			patched = replaceAll(

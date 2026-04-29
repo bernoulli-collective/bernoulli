@@ -12,6 +12,8 @@
 ---
 
 ### Key changes in this fork:
+- Lab canon skill
+- Cold emailing skill
 - Situated summary of work. See this repo for [biophysics examples](https://github.com/bernoulli-collective/bernoulli-biophysics/tree/main/lit-reviews)
 - Jiabin Huang's awesome research skills, including: cold emailing via running `/paper-outreach`
 

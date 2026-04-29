@@ -188,3 +188,17 @@ Before responding, verify on disk that all required artifacts exist. If verifica
 Before responding, also verify that any fixes claimed in the provenance are reflected in the final candidate. If a fix removed a phrase, number, source, or claim, run a targeted `rg`/`grep` check for the removed content and a second check for the corrected content. Do not claim "all patches applied", "all checks pass", or "fixed" unless these commands or reads succeed.
 
 Final response should be brief: link the final file, provenance file, and any blocked checks.
+
+## Step 8: Register in database
+
+Run the following command (expand `<slug>` to the actual slug):
+
+```
+python /Users/harvest/nova/bernoulli-db/log_output.py \
+  --slug <slug> --type deep_research \
+  --file-path outputs/<slug>.md \
+  --note "notes/<slug>-research-*.md" research_sweep \
+  --note "notes/<slug>-verification.md" verification
+```
+
+If the script is not found or exits with an error, skip silently and append `db-registration: failed` to the provenance sidecar.

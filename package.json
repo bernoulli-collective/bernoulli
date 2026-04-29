@@ -45,6 +45,7 @@
     "build": "tsc -p tsconfig.build.json",
     "build:native-bundle": "node ./scripts/build-native-bundle.mjs",
     "dev": "tsx src/index.ts",
+		"strip-output-bold": "node ./scripts/strip-output-bold.mjs",
     "prepack": "node ./scripts/clean-publish-artifacts.mjs && npm run build && node ./scripts/prepare-runtime-workspace.mjs",
     "start": "tsx src/index.ts",
     "start:dist": "node ./bin/feynman.js",

@@ -69,6 +69,42 @@ Use this file to track chronology, not release notes. Keep entries short, factua
 - Blockers: None.
 - Next: Optional only — produce a legal memorandum on the basis of Paris's capital status if requested.
 
+### 2026-04-24 20:25 local — airan
+
+- Objective: Map the research canon of the Airan Lab at Stanford and deliver `outputs/airan-canon.md`.
+- Changed: Collected the official publication list from the lab website, added a plan artifact at `outputs/.plans/airan.md`, saved publication/verification notes in `notes/airan-publications.md` and `notes/airan-verification.md`, rendered `outputs/airan-canon-diagram.png`, and wrote the cited canon map to `outputs/airan-canon.md`.
+- Verified: Confirmed `outputs/airan-canon.md` and the diagram exist on disk; verified cited URLs are reachable/plausible; ran a verifier pass that reported PASS with only a minor provenance caveat on the manually counted publication tally.
+- Failed / learned: Attempting the `researcher` subagent crashed in the runtime, so the topic-trajectory synthesis was completed directly before running the `verifier` subagent successfully on the finished draft.
+- Blockers: None for delivery.
+- Next: If requested, summarize one or more of the top-ranked papers into `outputs/airan-summary.md`.
+
+### 2026-04-24 18:16 local — synthneuro
+
+- Objective: Map the research canon of the Synthetic Neurobiology Group (Ed Boyden lab) from the public lab archive and produce a canonical lab-canon brief.
+- Changed: Scraped the lab publication archive across 30 paginated pages on `synthneuro.org`, sampled project/about pages plus key paper pages, and wrote `outputs/synthneuro-canon.md`.
+- Verified: Confirmed `outputs/synthneuro-canon.md` exists on disk after write; confirmed the lab site exposes a broad publication list spanning 1999–2026 and identifies Ed Boyden as PI at MIT.
+- Failed / learned: The subagent listing tool errored during discovery (`Cannot access 'userDir' before initialization`), so synthesis proceeded with direct source gathering instead of delegated workers.
+- Blockers: No full citation-audit pass across all 299 listed entries; originality ranking is therefore inferential rather than bibliometric.
+- Next: If requested, summarize any of the top-ranked papers into a per-paper deep dive.
+
+### 2026-04-24 16:48 PDT — neuroscience-scaling-laws
+
+- Objective: Run a literature review on scaling laws in neuroscience and produce a cited brief with provenance.
+- Changed: Created plan artifact at `outputs/.plans/neuroscience-scaling-laws.md`; ran two researcher subagents into `notes/neuroscience-scaling-laws-research-structure.md` and `notes/neuroscience-scaling-laws-research-dynamics.md`; gathered primary comparative papers on brain/cortex/cell/connectome/metabolic scaling.
+- Verified: Read `CHANGELOG.md`; confirmed the subagent registry exposes `researcher`, `reviewer`, and `verifier`; directly inspected web-fetched primary-source summaries for key papers including Zhang & Sejnowski (2000), Herculano-Houzel et al. (2007, 2010, 2011), Ventura-Antunes et al. (2013), Mota & Herculano-Houzel (2015), Ardesch et al. (2022), and Puxeddu et al. (2024).
+- Failed / learned: Alpha paper search was poor for this topic because much of the core literature is outside arXiv; web/PubMed/DOI sources were more effective.
+- Blockers: Need final synthesis, citation/URL verification pass, reviewer pass, and artifact promotion.
+- Next: Draft `outputs/neuroscience-scaling-laws.md`, write provenance, then run verifier and reviewer passes.
+
+### 2026-04-24 16:55 PDT — neuroscience-scaling-laws
+
+- Objective: Close the literature-review workflow with synthesis, verification, and artifact delivery.
+- Changed: Wrote `outputs/neuroscience-scaling-laws.md` and `outputs/neuroscience-scaling-laws.provenance.md`; ran `verifier` into `notes/neuroscience-scaling-laws-verification.md` and `reviewer` into `notes/neuroscience-scaling-laws-review.md`; revised scope language, softened mechanistic claims, and fixed the broken source `[15]` URL by replacing it with a PMC link.
+- Verified: Confirmed final artifacts exist on disk via `ls -l`; verifier re-check ended at `PASS WITH MINOR CLEANUP`; applied the remaining minor citation-fit cleanup after the verifier pass.
+- Failed / learned: The main failure mode was not factual hallucination but over-broad framing; explicit scope statements materially improved the review.
+- Blockers: None for delivery.
+- Next: Optional only — if requested, extend this into a narrower review on biological analogues of AI scaling laws or a paper-by-paper reading list.
+
 ### 2026-04-14 12:00 local — capital-belgium
 
 - Objective: Run a deep-research workflow for the question "What is the capital of Belgium?"
@@ -180,6 +216,15 @@ Use this file to track chronology, not release notes. Keep entries short, factua
 ### 2026-03-31 12:05 PDT — pi-backlog-cleanup-round-2
 
 - Objective: Finish the remaining high-confidence open tracker items after the Pi 0.64.0 upgrade instead of leaving the issue list half-reconciled.
+
+### 2026-04-24 21:15 local — electrode-array-scaling
+
+- Objective: Produce a literature review on scaling laws in electrode array fabrication and save a canonical brief plus provenance sidecar.
+- Changed: Created `outputs/.plans/electrode-array-scaling.md`; gathered accessible review/paper evidence via web/PDF tools after `alpha_search` was blocked by login; wrote `outputs/electrode-array-scaling.md` and `outputs/electrode-array-scaling.provenance.md`.
+- Verified: Confirmed the final artifact and sidecar exist on disk; reviewer spot-check initially failed on scope/citation hygiene, then passed after adding explicit method/scope limits and fixing citation numbering/source labeling.
+- Failed / learned: The alpha-backed paper workflow was unavailable in-session (`Not logged in. Run alpha login first.`), so the review is a targeted narrative synthesis from accessible sources rather than an alpha-assisted literature pull.
+- Blockers: No systematic-review-style coverage guarantee; some publisher content was only partially accessible.
+- Next: If requested, convert the brief into a platform comparison matrix or a narrower sub-review on impedance scaling, wafer-scale manufacturing, or connectorization.
 - Changed: Added a Windows extension-loader patch helper so Feynman rewrites Pi extension imports to `file://` URLs on Windows before interactive startup; added `/commands`, `/tools`, and `/capabilities` discovery commands and surfaced `/hotkeys` plus `/service-tier` in help metadata; added explicit service-tier support via `feynman model tier`, `--service-tier`, status/doctor output, and a provider-payload hook that passes `service_tier` only to supported OpenAI/OpenAI Codex/Anthropic models; added Exa provider recognition to Feynman's web-search status layer and vendored `pi-web-access`.
 - Verified: Ran `npm test`, `npm run typecheck`, and `npm run build`; smoke-imported the modified vendored `pi-web-access` modules with `node --import tsx`.
 - Failed / learned: The remaining ValiChord PR is still stale and mixes a real prompt/skill update with unrelated branch churn; it is a review/triage item, not a clean merge candidate.
@@ -312,3 +357,84 @@ Use this file to track chronology, not release notes. Keep entries short, factua
 - Failed / learned: The Élysée homepage does not explicitly state the core claim, so it should not be used as sole evidence for capital status.
 - Blockers: None for the verifier brief; any stronger legal memo would still need a more direct constitutional/statutory basis if that specific question is asked.
 - Next: Promote the brief into the final output or downgrade/remove any claim that leans on the Élysée URL alone.
+
+### 2026-04-24 00:00 local — airan
+
+- Objective: Map the research canon of the Airan Lab at Stanford and produce the canonical lab-canon artifact.
+- Changed: Read the Airan Lab publications page and Stanford Profiles publication list; gathered citation and topic metadata for key papers from OpenAlex; wrote `outputs/airan-canon.md` and `outputs/.plans/airan.md`.
+- Verified: Confirmed `outputs/airan-canon.md` exists on disk; checked the file contents after write; grounded ranked-paper influence claims in explicit OpenAlex or publisher cited-by metadata.
+- Failed / learned: The `subagent` listing call failed with `Cannot access 'userDir' before initialization`, so this run used direct lead-agent synthesis instead of delegated reviewer/verifier passes.
+- Blockers: Coverage is strong on peer-reviewed publications but still incomplete for conference abstracts/commentaries and any non-indexed pre-Stanford collaborations.
+- Next: If requested, run `/summarize` on one or more of the top-ranked papers and feed that into follow-on outreach or paper-level analysis.
+
+### 2026-04-24 16:27 local — keller
+
+- Objective: Map the research canon of the Precision Neurotherapeutics Lab at Stanford and produce the required artifacts.
+- Changed: Created plan artifact at `outputs/.plans/keller.md` and began official-source retrieval from the lab website plus Stanford pages.
+- Verified: Read existing `CHANGELOG.md` before starting this substantial run.
+- Failed / learned: None yet.
+- Blockers: Need complete publication extraction and URL verification across ranked papers.
+- Next: Compile the lab publication log, then synthesize topic trajectories and verification notes.
+
+### 2026-04-24 16:34 local — keller
+
+- Objective: Complete the Precision Neurotherapeutics Lab canon map and verify required artifacts.
+- Changed: Wrote `notes/keller-publications.md`, `notes/keller-trajectories.md`, `notes/keller-verification.md`, `outputs/keller-canon-diagram.md`, and `outputs/keller-canon.md`; updated the run plan.
+- Verified: Confirmed official lab identity via the lab team page and Stanford profile; checked direct URL reachability for the trajectory sources; confirmed the final canon map and required notes exist on disk.
+- Failed / learned: Both `researcher` and `verifier` subagents crashed with the same `unpdf/pdfjs` runtime failure, so synthesis and URL verification were completed directly.
+- Blockers: None for delivery; publication completeness remains limited by the site-curated archive.
+- Next: If the user wants, summarize one or more of the top-ranked papers.
+
+### 2026-04-25 00:00 local — self-improving-research-agents
+
+- Objective: Produce a literature review on self-improving research agents with a durable cited output.
+- Changed: Created plan artifact at `outputs/.plans/self-improving-research-agents.md`; scoped the review to LLM-based research agents and closely related self-improving agent mechanisms.
+- Verified: Read existing workspace instructions and changelog context before starting.
+- Failed / learned: Alpha paper retrieval is uneven across papers; some items return detailed AI reports rather than clean section extracts, so claims will need source-by-source caution.
+- Blockers: Need a tighter distinction between iterative research automation and true self-improvement.
+- Next: Gather core papers, extract mechanism/evidence patterns, then draft and verify the review.
+
+### 2026-04-25 13:45 local — self-improving-research-agents
+
+- Objective: Finish the literature review on self-improving research agents and save the canonical cited artifact.
+- Changed: Wrote `outputs/self-improving-research-agents.md` and `outputs/self-improving-research-agents.provenance.md`; saved supporting notes in `notes/self-improving-research-agents-research.md`, `notes/self-improving-research-agents-verification.md`, and `notes/self-improving-research-agents-review.md`; updated the run plan to complete all tasks.
+- Verified: Confirmed final artifact and provenance sidecar exist on disk; verifier reported 16/16 cited arXiv URLs live and checked the main quantitative claims; reviewer initially returned MAJOR REVISIONS, which were addressed by adding an operational taxonomy and evidence-weighting rubric.
+- Failed / learned: The literature uses “self-improvement” inconsistently; a four-way taxonomy was needed to avoid conflating within-run iteration, cross-run memory, explicit self-modification, and meta-optimization.
+- Blockers: None for delivery, but several 2026 papers remain early and less mature than the better-studied 2024–2025 work.
+- Next: If requested, expand this review into a paper-length survey with a comparison matrix or direct section-level checks on the newest 2026 papers.
+
+### 2026-04-25 14:00 local — optimal-canonical-bci
+
+- Objective: Produce a literature review on what the literature supports as the optimal canonical BCI design.
+- Changed: Created plan artifact at `outputs/.plans/optimal-canonical-bci.md`; scoped the task as a design-principles review rather than assuming one universally optimal BCI.
+- Verified: Read existing workspace instructions and changelog context before starting.
+- Failed / learned: The phrase “optimal canonical BCI” is ambiguous, so the review will explicitly operationalize it as an evidence-based design question.
+- Blockers: Need representative sources spanning EEG, ECoG, intracortical, multimodal, and adaptive/co-adaptive BCIs.
+- Next: Gather core reviews and representative studies, then draft and verify the review.
+
+### 2026-04-25 14:12 local — optimal-canonical-bci
+
+- Objective: Finish the literature review on the “optimal canonical BCI” question and save the canonical artifact.
+- Changed: Wrote `outputs/optimal-canonical-bci.md` and `outputs/optimal-canonical-bci.provenance.md`; saved supporting notes in `notes/optimal-canonical-bci-research.md`, `notes/optimal-canonical-bci-verification.md`, and `notes/optimal-canonical-bci-review.md`; updated the run plan to mark all tasks complete.
+- Verified: Confirmed final artifact and provenance sidecar exist on disk; verifier caught and the final artifact fixed one dead source URL, tightened cross-modality comparison language, and corrected SWITCH wording to all 4 implanted participants.
+- Failed / learned: Cross-modality BCI comparisons are much less fair than they first appear because the literature mixes unmatched tasks, metrics, participants, and maturity levels.
+- Blockers: None for delivery, but stronger claims would require matched comparison tables or more exhaustive review coverage.
+- Next: If requested, extend this into a comparison matrix by modality/task/metric or narrow it to one BCI objective such as communication, prosthetic control, or rehabilitation.
+
+### 2026-04-26 19:05 PDT — andersen
+
+- Objective: Map the research canon of the Andersen Lab at Caltech from the official lab site and produce the required canon artifacts.
+- Changed: Created `outputs/.plans/andersen.md`; scraped the official publications page at `https://www.vis.caltech.edu/papers`; wrote the raw publication log to `notes/andersen-publications.md` with 299 visible entries spanning 1977–2026 plus preprints.
+- Verified: Confirmed the PI/lab identity from the official People and Chen Institute pages: Richard A. Andersen, Caltech.
+- Failed / learned: The lab website is comprehensive but mixes local PDF links, occasional missing DOI metadata, and both preprint and journal versions for some work.
+- Blockers: Need topic-trajectory synthesis, originality ranking, diagram, citation/URL verification, and final canon map.
+- Next: Use the publications log and research page to synthesize core topics, then run researcher and verifier passes.
+
+### 2026-04-26 19:29 PDT — andersen
+
+- Objective: Finish the Andersen Lab canon map with trajectories, verification, diagram, and final artifact promotion.
+- Changed: Ran the `researcher` subagent into `notes/andersen-trajectories.md`; ran the `verifier` subagent into `notes/andersen-verification.md`; wrote the Mermaid concept map to `outputs/andersen-canon-diagram.md`; wrote the final canon map to `outputs/andersen-canon.md`; updated the plan ledger.
+- Verified: Confirmed on disk that `outputs/andersen-canon.md`, `notes/andersen-publications.md`, `notes/andersen-trajectories.md`, and `notes/andersen-verification.md` all exist; verifier verdict was PASS WITH MINOR ISSUES and the cited trajectory note was tightened accordingly.
+- Failed / learned: No hard subagent failure; the main issue was source hygiene, especially bot-gated DOI landing pages for older or publisher-hosted articles.
+- Blockers: None for delivery.
+- Next: If requested, summarize one or more of the top-ranked Andersen papers into per-paper notes.

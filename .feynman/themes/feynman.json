@@ -2,21 +2,21 @@
   "$schema": "https://raw.githubusercontent.com/badlogic/pi-mono/main/packages/coding-agent/src/modes/interactive/theme/theme-schema.json",
   "name": "feynman",
   "vars": {
-    "ink": "#d3c6aa",
-    "paper": "#2d353b",
-    "paper2": "#343f44",
-    "paper3": "#3a464c",
-    "panel": "#374247",
-    "stone": "#9da9a0",
-    "ash": "#859289",
-    "darkAsh": "#5c6a72",
-    "sage": "#a7c080",
-    "teal": "#7fbbb3",
-    "rose": "#e67e80",
-    "violet": "#d699b6",
-    "selection": "#425047",
-    "successBg": "#2f3b32",
-    "errorBg": "#3b3135"
+    "ink": "#ece3fa",
+    "paper": "#241f33",
+    "paper2": "#2d2540",
+    "paper3": "#352b49",
+    "panel": "#3a3050",
+    "stone": "#c7b6df",
+    "ash": "#b4a2cf",
+    "darkAsh": "#80709c",
+    "sage": "#d1b9f2",
+    "teal": "#c9a8f2",
+    "rose": "#e9b0e8",
+    "violet": "#c4b5fd",
+    "selection": "#4a3f63",
+    "successBg": "#342d46",
+    "errorBg": "#462f4a"
   },
   "colors": {
     "accent": "sage",
@@ -78,8 +78,8 @@
     "bashMode": "sage"
   },
   "export": {
-    "pageBg": "#2d353b",
-    "cardBg": "#343f44",
-    "infoBg": "#374247"
+    "pageBg": "#241f33",
+    "cardBg": "#2d2540",
+    "infoBg": "#3a3050"
   }
 }

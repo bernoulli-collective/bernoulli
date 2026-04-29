@@ -181,3 +181,15 @@ As a leading expert seated with the authors at a 3-star Michelin restaurant, rea
 Before you stop, verify on disk that `outputs/<slug>-summary.md` exists.
 
 The Sources list starts with the single source confirmed reachable in Step 1. Any external references introduced by Level 0 are appended there by the synthesizer; chunk subagents in Tier 3 never contribute to it.
+
+## Register in database
+
+Run the following command (expand `<slug>` to the actual slug):
+
+```
+python /Users/harvest/nova/bernoulli-db/log_output.py \
+  --slug <slug> --type summary \
+  --file-path outputs/<slug>-summary.md
+```
+
+If the script is not found or exits with an error, skip silently.

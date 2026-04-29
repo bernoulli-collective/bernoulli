@@ -141,6 +141,72 @@ test("patchPiSubagentsSource rewrites modern agents.ts discovery paths", () => {
 	assert.ok(!patched.includes('fs.existsSync(userDirNew) ? userDirNew : userDirOld'));
 });
 
+test("patchPiSubagentsSource fixes pi-subagents@0.17.0 discoverAgentsAll TDZ on userDir", () => {
+	const input = [
+		'import * as fs from "node:fs";',
+		'import * as os from "node:os";',
+		'import * as path from "node:path";',
+		'export function discoverAgentsAll(cwd: string): {',
+		'\tbuiltin: AgentConfig[];',
+		'\tuser: AgentConfig[];',
+		'\tproject: AgentConfig[];',
+		'\tchains: ChainConfig[];',
+		'\tuserDir: string;',
+		'\tprojectDir: string | null;',
+		'\tuserSettingsPath: string;',
+		'\tprojectSettingsPath: string | null;',
+		'} {',
+		'\tconst userDirOld = path.join(os.homedir(), ".pi", "agent", "agents");',
+		'\tconst userDirNew = path.join(os.homedir(), ".agents");',
+		'\tconst { readDirs: projectDirs, preferredDir: projectDir } = resolveNearestProjectAgentDirs(cwd);',
+		'\tconst userSettingsPath = getUserAgentSettingsPath();',
+		'\tconst projectSettingsPath = getProjectAgentSettingsPath(cwd);',
+		'\tconst userSettings = readSubagentSettings(userSettingsPath);',
+		'\tconst projectSettings = readSubagentSettings(projectSettingsPath);',
+		'',
+		'\tconst builtin = applyBuiltinOverrides(loadAgentsFromDir(BUILTIN_AGENTS_DIR, "builtin"), userSettings, projectSettings, userSettingsPath, projectSettingsPath);',
+		'\tconst user = loadAgentsFromDir(userDir, "user");',
+		'\tconst projectMap = new Map<string, AgentConfig>();',
+		'\tfor (const dir of projectDirs) {',
+		'\t\tfor (const agent of loadAgentsFromDir(dir, "project")) {',
+		'\t\t\tprojectMap.set(agent.name, agent);',
+		'\t\t}',
+		'\t}',
+		'\tconst project = Array.from(projectMap.values());',
+		'',
+		'\tconst chainMap = new Map<string, ChainConfig>();',
+		'\tfor (const dir of projectDirs) {',
+		'\t\tfor (const chain of loadChainsFromDir(dir, "project")) {',
+		'\t\t\tchainMap.set(chain.name, chain);',
+		'\t\t}',
+		'\t}',
+		'\tconst chains = [',
+		'\t\t...loadChainsFromDir(userDirOld, "user"),',
+		'\t\t...loadChainsFromDir(userDirNew, "user"),',
+		'\t\t...Array.from(chainMap.values()),',
+		'\t];',
+		'',
+		'\tconst userDir = path.join(resolvePiAgentDir(), "agents");',
+		'',
+		'\treturn { builtin, user, project, chains, userDir, projectDir, userSettingsPath, projectSettingsPath };',
+		'}',
+	].join("\n");
+
+	const patched = patchPiSubagentsSource("agents.ts", input);
+
+	const userDirDeclIndex = patched.indexOf('const userDir = path.join(resolvePiAgentDir(), "agents");');
+	const userDirUseIndex = patched.indexOf('loadAgentsFromDir(userDir, "user")');
+	assert.ok(userDirDeclIndex !== -1, "userDir declaration should remain in patched output");
+	assert.ok(userDirUseIndex !== -1, "userDir consumer call should remain in patched output");
+	assert.ok(userDirDeclIndex < userDirUseIndex, "userDir must be declared before any consumer call");
+
+	const declarationOccurrences = patched.split('const userDir = path.join(resolvePiAgentDir(), "agents");').length - 1;
+	assert.equal(declarationOccurrences, 1, "userDir should be declared exactly once");
+
+	const idempotent = patchPiSubagentsSource("agents.ts", patched);
+	assert.equal(idempotent, patched, "patch must be idempotent for the v0.17.0 discoverAgentsAll shape");
+});
+
 test("patchPiSubagentsSource preserves output on top-level parallel tasks", () => {
 	const input = [
 		"interface TaskParam {",

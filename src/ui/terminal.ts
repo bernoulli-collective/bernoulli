@@ -8,14 +8,14 @@ function rgb(red: number, green: number, blue: number): string {
 	return `\x1b[38;2;${red};${green};${blue}m`;
 }
 
-// Match the outer CLI to the bundled Feynman Pi theme instead of generic magenta panels.
-const INK = rgb(211, 198, 170);
-const STONE = rgb(157, 169, 160);
-export const ASH = rgb(133, 146, 137);
-const DARK_ASH = rgb(92, 106, 114);
-export const SAGE = rgb(167, 192, 128);
-const TEAL = rgb(127, 187, 179);
-const ROSE = rgb(230, 126, 128);
+// Match the outer CLI to a light-purple Bernoulli theme.
+const INK = rgb(236, 227, 250);
+const STONE = rgb(199, 182, 223);
+export const ASH = rgb(180, 162, 207);
+const DARK_ASH = rgb(128, 112, 156);
+export const SAGE = rgb(209, 185, 242);
+const TEAL = rgb(201, 168, 242);
+const ROSE = rgb(233, 176, 232);
 
 function paint(text: string, ...codes: string[]): string {
 	return `${codes.join("")}${text}${RESET}`;
