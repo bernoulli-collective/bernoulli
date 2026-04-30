@@ -19,11 +19,18 @@ def _cmd_setup(args: argparse.Namespace) -> None:
 
 
 def _cmd_ingest(args: argparse.Namespace) -> None:
-    from .ingest import ingest_a16z
+    if args.file:
+        from .ingest import ingest_manual
 
-    ensure_dirs()
-    init_db()
-    ingest_a16z(limit=args.limit)
+        ensure_dirs()
+        init_db()
+        ingest_manual(args.file)
+    else:
+        from .ingest import ingest_a16z
+
+        ensure_dirs()
+        init_db()
+        ingest_a16z(limit=args.limit)
 
 
 def _cmd_match(args: argparse.Namespace) -> None:
@@ -48,6 +55,7 @@ def _cmd_list(args: argparse.Namespace) -> None:
     table.add_column("Title")
     table.add_column("Company")
     table.add_column("Location")
+    table.add_column("Roles", style="yellow")
     table.add_column("Status", style="green")
     table.add_column("Source")
     for j in jobs:
@@ -56,6 +64,7 @@ def _cmd_list(args: argparse.Namespace) -> None:
             j.title,
             j.company,
             j.location or "—",
+            ", ".join(j.role_types) if j.role_types else "—",
             j.status,
             j.source,
         )
@@ -120,6 +129,12 @@ def main() -> None:
         type=int,
         default=3,
         help="Max jobs to scrape (default: 3)",
+    )
+    p_ingest.add_argument(
+        "--file",
+        type=str,
+        default=None,
+        help="Manual JSON file with job listings",
     )
     p_ingest.set_defaults(func=_cmd_ingest)
 

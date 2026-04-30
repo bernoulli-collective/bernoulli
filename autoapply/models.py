@@ -9,6 +9,7 @@ class User(BaseModel):
     id: int | None = None
     name: str
     email: str | None = None
+    skill_level: str = "internship"
     resume_text: str | None = None
     resume_path: str | None = None
     portfolio_url: str | None = None
@@ -27,6 +28,7 @@ class Job(BaseModel):
     vc_firm_id: int | None = None
     description: str | None = None
     requirements: dict = Field(default_factory=dict)
+    role_types: list[str] = Field(default_factory=list)
     education_req: str | None = None
     location: str | None = None
     age_req: str | None = None

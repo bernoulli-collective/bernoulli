@@ -11,13 +11,28 @@
 
 ---
 
-### Key changes in this fork:
-- Lab canon skill
-- Cold emailing skill
+### Key features:
+Workflows:
+- Auto-apply 
+- Lab canon 
+- Cold emailing 
+
+Skills:
+- Raised and hiring: Which companies have just raised funding and are hiring in california?
+
+Methods:
+For summarizing papers, we have:
 - Situated summary of work. See this repo for [biophysics examples](https://github.com/bernoulli-collective/bernoulli-biophysics/tree/main/lit-reviews)
 - Jiabin Huang's awesome research skills, including: cold emailing via running `/paper-outreach`
 
+### Planned features:
+- An observable dashboard for jobs
+- Integration with [Internet aggregator](https://github.com/exanova-y/cn-internet-aggregator)
+- A grant scraping workflow
 
+
+
+## Feynman, original features:
 ### Installation
 
 **macOS / Linux:**

@@ -13,6 +13,7 @@ CREATE TABLE IF NOT EXISTS users (
     id          INTEGER PRIMARY KEY,
     name        TEXT NOT NULL,
     email       TEXT,
+    skill_level TEXT DEFAULT 'internship',
     resume_text TEXT,
     resume_path TEXT,
     portfolio_url TEXT,
@@ -40,6 +41,7 @@ CREATE TABLE IF NOT EXISTS jobs (
     vc_firm_id      INTEGER REFERENCES vc_firms(id),
     description     TEXT,
     requirements    TEXT DEFAULT '{}',
+    role_types      TEXT DEFAULT '[]',
     education_req   TEXT,
     location        TEXT,
     age_req         TEXT,
@@ -103,13 +105,14 @@ def upsert_user(user: User, db_path: Path | str | None = None) -> int:
     try:
         conn.execute(
             """INSERT OR REPLACE INTO users
-               (id, name, email, resume_text, resume_path, portfolio_url,
+               (id, name, email, skill_level, resume_text, resume_path, portfolio_url,
                 public_links, writing_samples, private_writing_samples, updated_at)
-               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)""",
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)""",
             (
                 user.id or 1,
                 user.name,
                 user.email,
+                user.skill_level,
                 user.resume_text,
                 user.resume_path,
                 user.portfolio_url,
@@ -138,6 +141,7 @@ def get_user(user_id: int = 1, db_path: Path | str | None = None) -> User | None
             id=d["id"],
             name=d["name"],
             email=d.get("email"),
+            skill_level=d.get("skill_level", "internship"),
             resume_text=d.get("resume_text"),
             resume_path=d.get("resume_path"),
             portfolio_url=d.get("portfolio_url"),
@@ -187,17 +191,17 @@ def get_vc_firm_id(name: str, db_path: Path | str | None = None) -> int | None:
 # -- Job operations ---------------------------------------------------------
 
 
-def insert_job(job: Job, db_path: Path | str | None = None) -> int | None:
-    """Insert a job; returns None if URL already exists."""
+def insert_job(job: Job, db_path: Path | str | None = None) -> bool:
+    """Insert a job; returns True if inserted, False if URL already exists."""
     import json
 
     conn = get_connection(db_path)
     try:
-        cur = conn.execute(
+        conn.execute(
             """INSERT OR IGNORE INTO jobs
                (title, company, url, apply_link, source, vc_firm_id,
-                description, requirements, education_req, location, age_req, raw_html_path)
-               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                description, requirements, role_types, education_req, location, age_req, raw_html_path)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
             (
                 job.title,
                 job.company,
@@ -207,14 +211,16 @@ def insert_job(job: Job, db_path: Path | str | None = None) -> int | None:
                 job.vc_firm_id,
                 job.description,
                 json.dumps(job.requirements),
+                json.dumps(job.role_types),
                 job.education_req,
                 job.location,
                 job.age_req,
                 job.raw_html_path,
             ),
         )
+        inserted = conn.total_changes > 0
         conn.commit()
-        return cur.lastrowid
+        return inserted
     finally:
         conn.close()
 
@@ -267,6 +273,7 @@ def get_job(job_id: int, db_path: Path | str | None = None) -> Job | None:
             vc_firm_id=d.get("vc_firm_id"),
             description=d.get("description"),
             requirements=json.loads(d.get("requirements") or "{}"),
+            role_types=json.loads(d.get("role_types") or "[]"),
             education_req=d.get("education_req"),
             location=d.get("location"),
             age_req=d.get("age_req"),
@@ -305,6 +312,7 @@ def get_jobs(
                     vc_firm_id=d.get("vc_firm_id"),
                     description=d.get("description"),
                     requirements=json.loads(d.get("requirements") or "{}"),
+                    role_types=json.loads(d.get("role_types") or "[]"),
                     education_req=d.get("education_req"),
                     location=d.get("location"),
                     age_req=d.get("age_req"),
