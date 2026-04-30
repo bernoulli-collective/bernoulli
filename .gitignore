@@ -16,3 +16,11 @@ notes/
 experiments/*
 !experiments/.gitkeep
 .env.example
+
+# Auto-apply database
+autoapply/data/
+autoapply/.venv/
+autoapply/__pycache__/
+autoapply.db
+autoapply.db-shm
+autoapply.db-wal

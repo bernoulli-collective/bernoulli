@@ -1,0 +1,10 @@
+[project]
+name = "autoapply"
+version = "0.1.0"
+description = "Job application automation pipeline"
+requires-python = ">=3.12"
+dependencies = [
+    "pydantic>=2.0",
+    "pypdf>=4.0",
+    "rich>=13.0",
+]
