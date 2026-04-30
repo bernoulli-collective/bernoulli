@@ -13,7 +13,7 @@
 
 ### Key features:
 Workflows:
-- Auto-apply: Uses subskills: 1) uses raised and hiring 2) uses applicant encoder 3) creates cover letter.
+- Auto-apply: Uses subskills: 1) uses raised and hiring to find a list of startups 2) uses applicant encoder 3) creates cover letter. Note: 3 is not working yet! But 1 works relaly well given info source. Alternatively, we can also run these steps manually.
 - Lab canon 
 - Cold emailing 
 
