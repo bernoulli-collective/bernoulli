@@ -13,7 +13,7 @@
 
 ### Key features:
 Workflows:
-- Auto-apply 
+- Auto-apply: Uses subskills: 1) uses raised and hiring 2) uses applicant encoder 3) creates cover letter.
 - Lab canon 
 - Cold emailing 
 

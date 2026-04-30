@@ -34,11 +34,60 @@ def _cmd_ingest(args: argparse.Namespace) -> None:
 
 
 def _cmd_match(args: argparse.Namespace) -> None:
-    print("[auto-apply] match — coming in Phase 3")
+    from .autofill import generate_autofill, save_autofill
+    from .cover_letter import process_matches
+    from .db import get_job, get_user
+    from .matching import display_matches, match_all_jobs, match_job
+
+    ensure_dirs()
+    init_db()
+
+    if args.id:
+        # Match a specific job
+        from .config import USER_ID
+
+        user = get_user(USER_ID)
+        job = get_job(args.id)
+        if not user:
+            print("[auto-apply] No user profile. Run 'auto-apply setup' first.")
+            return
+        if not job:
+            print(f"[auto-apply] Job {args.id} not found.")
+            return
+        result = match_job(user, job)
+        display_matches([result])
+        process_matches([result])
+        # Generate autofill
+        answers = generate_autofill(user, job, result.keyword_overlap)
+        save_autofill(job.id, answers)
+    else:
+        # Match all new jobs
+        results = match_all_jobs(min_score=args.min_score)
+        display_matches(results)
+        if results:
+            process_matches(results)
+            # Generate autofill for each
+            from .config import USER_ID
+
+            user = get_user(USER_ID)
+            if user:
+                for r in results:
+                    job = get_job(r.job_id)
+                    if job:
+                        answers = generate_autofill(user, job, r.keyword_overlap)
+                        save_autofill(job.id, answers)
 
 
 def _cmd_review(args: argparse.Namespace) -> None:
-    print("[auto-apply] review — coming in Phase 3")
+    from .preview import preview_all_drafts, preview_draft
+
+    ensure_dirs()
+    init_db()
+
+    if args.id:
+        preview_draft(args.id)
+    else:
+        preview_all_drafts()
 
 
 def _cmd_list(args: argparse.Namespace) -> None:
@@ -142,6 +191,12 @@ def main() -> None:
     p_match = subparsers.add_parser("match", help="Match jobs and generate drafts")
     p_match.add_argument("--all", action="store_true", help="Process all new jobs")
     p_match.add_argument("--id", type=int, help="Process specific job ID")
+    p_match.add_argument(
+        "--min-score",
+        type=float,
+        default=0.2,
+        help="Minimum match score threshold (default: 0.2)",
+    )
     p_match.set_defaults(func=_cmd_match)
 
     # review

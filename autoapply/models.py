@@ -9,8 +9,12 @@ class User(BaseModel):
     id: int | None = None
     name: str
     email: str | None = None
+    pronouns: str | None = None
+    geolocation: str | None = None
     skill_level: str = "internship"
-    resume_text: str | None = None
+    roles: list[str] = Field(default_factory=list)  # e.g., ["AI and ML Engineering", "Research Engineering"]
+    keywords: list[str] = Field(default_factory=list)  # extracted from resume, portfolio, writing samples
+    resume_text: str | None = None  # optional, may be omitted if keywords are sufficient
     resume_path: str | None = None
     portfolio_url: str | None = None
     public_links: list[str] = Field(default_factory=list)

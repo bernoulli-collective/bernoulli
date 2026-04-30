@@ -28,7 +28,13 @@ If the user provides a URL, navigate directly. If they provide a name, resolve t
    - **Article URL** — direct link
    - **Date** — publication date
 4. Write results to `autoapply/data/raised_and_hiring.json` as a JSON array
-5. Display a summary table
+5. Run the ingestion script to load results into SQLite:
+
+```
+uv run autoapply/ingest_raised.py autoapply/data/raised_and_hiring.json
+```
+
+6. Display a summary table from the script output
 
 ## Output format
 
@@ -45,6 +51,7 @@ If the user provides a URL, navigate directly. If they provide a name, resolve t
     "date": "2026-04-28"
   }
 ]
+```
 
 ## Target
 
