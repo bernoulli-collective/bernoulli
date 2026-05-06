@@ -1,0 +1,28 @@
+# Provenance: landmark papers and non-standard representations in researcher agents
+
+- **Date:** 2026-05-06
+- **Rounds:** 2
+- **Sources consulted:** 24 cited URLs plus multiple web-search result syntheses and fetched arXiv/HTML pages
+- **Sources accepted:** 24 cited URLs in the final brief
+- **Sources rejected:**
+  - `alpha_search` results unavailable due to tool error (`Tool embedding_similarity_search not found`)
+  - initial subagent-produced research files were empty and not used as evidence
+- **Verification:** PASS WITH NOTES
+- **Plan:** `outputs/.plans/researcher-agent-representations.md`
+- **Research files:**
+  - `notes/researcher-agent-representations-research-foundations.md`
+  - `notes/researcher-agent-representations-research-landmarks.md`
+  - `notes/researcher-agent-representations-research-representations.md`
+  - `notes/researcher-agent-representations-research-evidence.md`
+  - `notes/researcher-agent-representations-verification.md`
+- **Draft lineage:**
+  - `outputs/.drafts/researcher-agent-representations-draft.md`
+  - `outputs/.drafts/researcher-agent-representations-cited.md`
+- **Verification notes:**
+  - URL reachability check over 24 cited URLs returned 22 HTTP 200 and 2 HTTP 403 results.
+  - The two 403 URLs were retained only for non-unique contextual support; the final brief does not depend on them for unique quantitative claims.
+  - No full PDF parsing was performed by design in this workflow.
+- **Known issues / caveats:**
+  - The field canon is still unsettled for several 2024–2026 papers; "landmark" status is partly inferential and is labeled that way in the brief.
+  - Some foundational lineage claims are interpretive rather than explicit citation chains from modern papers.
+- **db-registration:** failed

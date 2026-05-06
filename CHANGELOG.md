@@ -456,3 +456,21 @@ Use this file to track chronology, not release notes. Keep entries short, factua
 - Failed / learned: Both `researcher` and `verifier` subagents returned empty output files, so synthesis and verification were completed directly; DB registration failed because `/Users/harvest/nova/bernoulli-db/log_output.py` was missing.
 - Blockers: No rendered Mermaid PNG/SVG because no Mermaid rendering tool was exposed; saved Mermaid source instead.
 - Next: If requested, summarize one of the top-ranked papers starting with the 2017 DAR paper, 2022 banded ridge paper, or 2024 sparse autoencoder paper.
+
+### 2026-05-06 18:20 local — researcher-agent-representations
+
+- Objective: Run deep research on landmark papers and non-standard representations in researcher agents, with emphasis on foundational undercurrents beyond context engineering.
+- Changed: Created four task briefs under `outputs/.plans/`; attempted 4 parallel researcher subagents; gathered evidence directly into `notes/researcher-agent-representations-research-foundations.md`, `notes/researcher-agent-representations-research-landmarks.md`, `notes/researcher-agent-representations-research-representations.md`, and `notes/researcher-agent-representations-research-evidence.md`.
+- Verified: Read existing `CHANGELOG.md`; confirmed subagent registry before delegation; verified the initial subagent outputs were empty on disk and replaced them with lead-authored evidence notes backed by web/arXiv/HTML sources.
+- Failed / learned: `alpha_search` failed with `Tool embedding_similarity_search not found`; initial researcher subagent runs returned success statuses but wrote empty files, so direct evidence gathering was necessary.
+- Blockers: Need synthesis draft, citation pass, verification pass, final promotion, and provenance.
+- Next: Write `outputs/.drafts/researcher-agent-representations-draft.md`, then run verifier and reviewer passes before delivery.
+
+### 2026-05-06 18:40 local — researcher-agent-representations
+
+- Objective: Complete synthesis, citation, verification, and final promotion for the researcher-agent-representations workflow.
+- Changed: Wrote `outputs/.drafts/researcher-agent-representations-draft.md`; produced cited brief `outputs/.drafts/researcher-agent-representations-cited.md`; completed manual verification in `notes/researcher-agent-representations-verification.md`; promoted final output to `outputs/researcher-agent-representations.md`; wrote `outputs/researcher-agent-representations.provenance.md`.
+- Verified: Confirmed the final cited brief is non-empty; ran a 24-URL reachability check with 22 HTTP 200 and 2 HTTP 403 results; confirmed final output and provenance files exist on disk.
+- Failed / learned: The verifier and reviewer subagents both wrote empty output files despite successful tool returns, so citation/verification fallback had to be completed directly.
+- Blockers: No delivery blocker, but verification remains PASS WITH NOTES because two cited context URLs returned HTTP 403.
+- Next: Optional only — tighten the canon into a shorter curated reading list or convert the brief into a paper-style survey if requested.

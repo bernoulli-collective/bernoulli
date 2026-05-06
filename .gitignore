@@ -7,8 +7,10 @@ node_modules
 .feynman/schedule-prompts.json
 dist
 *.tgz
-!outputs/.gitkeep
-outputs/*
+outputs/.notes
+outputs/.plans
+outputs/.drafts
+outputs/.gitkeep
 papers/*
 notes/
 !papers/.gitkeep
